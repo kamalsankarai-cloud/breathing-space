@@ -255,13 +255,27 @@
                 <span id="viewModeText" class="text-xs font-medium tracking-wide hidden sm:inline">Lungs</span>
             </button>
 
-            <!-- Day-Wise Session Log Trigger -->
+            <!-- Day-Wise Session Log & Analytics Trigger -->
             <button id="logBtn" aria-label="Open Day-Wise Log" class="relative py-2 px-2.5 sm:px-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition backdrop-blur-md flex items-center gap-1.5 active:scale-95">
                 <svg class="w-4 h-4 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span class="text-xs font-medium tracking-wide hidden sm:inline">Daily Log</span>
                 <span id="logCountBadge" class="text-[10px] bg-teal-500/30 border border-teal-400/40 text-teal-300 font-semibold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">0</span>
+            </button>
+
+            <!-- Analytics Dashboard Trigger -->
+            <button id="analyticsBtn" aria-label="Open Analytics Dashboard" class="p-2 sm:p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition backdrop-blur-md active:scale-95" title="Mindfulness Analytics">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+            </button>
+
+            <!-- Daily Mindfulness Reminder Trigger -->
+            <button id="reminderBtn" aria-label="Daily Reminder Settings" class="p-2 sm:p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition backdrop-blur-md active:scale-95" title="Daily Reminders">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
             </button>
 
             <!-- Sound and Music Studio Trigger -->
@@ -561,7 +575,7 @@
                 <span id="patternTimingLabel" class="text-teal-300 font-mono">4-4-4-4</span>
             </div>
             
-            <div class="grid grid-cols-3 gap-1.5" role="tablist">
+            <div class="grid grid-cols-4 gap-1.5" role="tablist">
                 <button data-pattern="box" class="pattern-btn active-pattern flex flex-col items-center py-2 px-1 rounded-xl text-center border transition bg-teal-500/20 border-teal-400/50 text-white">
                     <span class="text-xs font-semibold">Box Focus</span>
                     <span class="text-[10px] text-teal-200/70">4 • 4 • 4 • 4</span>
@@ -575,6 +589,11 @@
                 <button data-pattern="calm" class="pattern-btn flex flex-col items-center py-2 px-1 rounded-xl text-center border transition bg-white/[0.02] border-white/5 hover:bg-white/[0.06] text-slate-300">
                     <span class="text-xs font-semibold">Coherent</span>
                     <span class="text-[10px] text-slate-400">5.5 • 5.5</span>
+                </button>
+
+                <button data-pattern="custom" id="customPatternBtn" class="pattern-btn flex flex-col items-center py-2 px-1 rounded-xl text-center border transition bg-white/[0.02] border-white/5 hover:bg-white/[0.06] text-purple-300">
+                    <span class="text-xs font-semibold flex items-center gap-1">Custom ⚙️</span>
+                    <span id="customPatternBadge" class="text-[10px] text-purple-300/80 font-mono">4 • 2 • 6 • 2</span>
                 </button>
             </div>
         </div>
@@ -691,6 +710,19 @@
                     <div class="mt-2 flex justify-end">
                         <button id="previewChimeBtn" class="text-[11px] text-teal-400 hover:text-teal-300 flex items-center gap-1 py-1 px-2.5 rounded-lg bg-teal-500/10 border border-teal-500/20 active:scale-95 transition">
                             <span>▶ Test chime sound</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Spoken Voice Guidance Generator -->
+                <div class="pt-3 border-t border-white/10">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="font-medium text-slate-200 block">Spoken Voice Guidance</span>
+                            <span class="text-[10px] text-slate-400">Calm audio cues for Inhale, Hold, & Exhale</span>
+                        </div>
+                        <button id="voiceToggleBtn" class="py-1 px-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 transition text-xs font-semibold active:scale-95">
+                            Off 🎙️
                         </button>
                     </div>
                 </div>
@@ -899,6 +931,109 @@
                     <button id="logoutBtn" type="button" class="py-1 px-2.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-[11px] transition active:scale-95">
                         Sign Out
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Rhythm Builder Modal -->
+    <div id="customModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-slate-900 border border-purple-500/30 max-w-sm w-full rounded-3xl p-6 shadow-2xl relative text-left">
+            <button id="closeCustomBtn" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-base sm:text-lg font-display font-semibold text-white">Custom Rhythm Builder</h3>
+                    <p class="text-[11px] text-slate-400">Configure personal Inhale/Hold/Exhale durations</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300">
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="font-medium text-emerald-300">Inhale Duration</span>
+                        <span id="customInhaleVal" class="font-mono text-teal-300">4.0s</span>
+                    </div>
+                    <input id="customInhaleSlider" type="range" min="1" max="10" step="0.5" value="4" class="w-full accent-teal-400 cursor-pointer h-1.5 bg-white/10 rounded-lg">
+                </div>
+
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="font-medium text-amber-300">Post-Inhale Hold</span>
+                        <span id="customHold1Val" class="font-mono text-amber-300">2.0s</span>
+                    </div>
+                    <input id="customHold1Slider" type="range" min="0" max="10" step="0.5" value="2" class="w-full accent-amber-400 cursor-pointer h-1.5 bg-white/10 rounded-lg">
+                </div>
+
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="font-medium text-rose-300">Exhale Duration</span>
+                        <span id="customExhaleVal" class="font-mono text-rose-300">6.0s</span>
+                    </div>
+                    <input id="customExhaleSlider" type="range" min="1" max="12" step="0.5" value="6" class="w-full accent-rose-400 cursor-pointer h-1.5 bg-white/10 rounded-lg">
+                </div>
+
+                <div>
+                    <div class="flex justify-between mb-1">
+                        <span class="font-medium text-purple-300">Post-Exhale Hold</span>
+                        <span id="customHold2Val" class="font-mono text-purple-300">2.0s</span>
+                    </div>
+                    <input id="customHold2Slider" type="range" min="0" max="10" step="0.5" value="2" class="w-full accent-purple-400 cursor-pointer h-1.5 bg-white/10 rounded-lg">
+                </div>
+            </div>
+
+            <button id="applyCustomBtn" class="mt-4 w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-semibold text-xs shadow-md transition active:scale-95">
+                Apply Custom Rhythm
+            </button>
+        </div>
+    </div>
+
+    <!-- Analytics Dashboard Modal -->
+    <div id="analyticsModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-slate-900 border border-teal-500/30 max-w-md w-full rounded-3xl p-5 sm:p-6 shadow-2xl relative text-left max-h-[85vh] flex flex-col">
+            <button id="closeAnalyticsBtn" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-2xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center text-teal-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-base sm:text-lg font-display font-semibold text-white">Mindfulness Analytics</h3>
+                    <p class="text-[11px] text-slate-400">Weekly practice patterns & mood distribution</p>
+                </div>
+            </div>
+
+            <!-- Weekly Practice Bar Chart -->
+            <div class="mb-3.5 bg-white/[0.02] border border-white/10 rounded-2xl p-3.5">
+                <div class="flex justify-between items-center mb-3 text-xs">
+                    <span class="font-medium text-slate-200">Weekly Practice (Minutes)</span>
+                    <span id="analyticsTotalMins" class="text-teal-300 font-mono text-[11px]">0 mins total</span>
+                </div>
+                <div id="weeklyBarChart" class="flex items-end justify-between h-28 pt-4 px-2 gap-1.5 border-b border-white/10">
+                    <!-- Dynamic Bars -->
+                </div>
+            </div>
+
+            <!-- Mood Breakdown Pills -->
+            <div class="bg-white/[0.02] border border-white/10 rounded-2xl p-3.5">
+                <span class="font-medium text-slate-200 text-xs block mb-2">Mood Distribution</span>
+                <div id="moodBreakdownContainer" class="grid grid-cols-2 gap-2 text-xs">
+                    <!-- Dynamic Mood Items -->
                 </div>
             </div>
         </div>
@@ -1253,6 +1388,45 @@
             }
         }
 
+        class VoiceEngine {
+            constructor() {
+                this.enabled = false;
+                this.synth = window.speechSynthesis || null;
+                this.voice = null;
+                this.volume = 0.8;
+                this.pitch = 0.95;
+                this.rate = 0.85;
+                this.initVoice();
+            }
+
+            initVoice() {
+                if (!this.synth) return;
+                const updateVoices = () => {
+                    const voices = this.synth.getVoices();
+                    this.voice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Zira'))) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+                };
+                updateVoices();
+                if (this.synth.onvoiceschanged !== undefined) {
+                    this.synth.onvoiceschanged = updateVoices;
+                }
+            }
+
+            speak(text) {
+                if (!this.enabled || !this.synth) return;
+                try {
+                    this.synth.cancel();
+                    const utter = new SpeechSynthesisUtterance(text);
+                    if (this.voice) utter.voice = this.voice;
+                    utter.volume = this.volume;
+                    utter.pitch = this.pitch;
+                    utter.rate = this.rate;
+                    this.synth.speak(utter);
+                } catch (e) {}
+            }
+        }
+
+        const voiceEngine = new VoiceEngine();
+
         const PATTERNS = {
             box: {
                 id: 'box',
@@ -1288,6 +1462,19 @@
                 steps: [
                     { phase: 'Inhale', duration: 5.5, tip: 'Smooth continuous intake', scale: 1.22, lungScaleX: 1.18, lungScaleY: 1.14, diaphragmY: 15 },
                     { phase: 'Exhale', duration: 5.5, tip: 'Smooth continuous release', scale: 0.78, lungScaleX: 0.88, lungScaleY: 0.88, diaphragmY: 0 }
+                ]
+            },
+            custom: {
+                id: 'custom',
+                name: 'Custom Rhythm',
+                label: '4 • 2 • 6 • 2',
+                color: '#c084fc',
+                glowClass: 'bg-purple-500',
+                steps: [
+                    { phase: 'Inhale', duration: 4, tip: 'Custom inhalation', scale: 1.22, lungScaleX: 1.18, lungScaleY: 1.15, diaphragmY: 14 },
+                    { phase: 'Hold', duration: 2, tip: 'Keep breath steady', scale: 1.22, lungScaleX: 1.18, lungScaleY: 1.15, diaphragmY: 14 },
+                    { phase: 'Exhale', duration: 6, tip: 'Custom exhalation', scale: 0.78, lungScaleX: 0.88, lungScaleY: 0.88, diaphragmY: 0 },
+                    { phase: 'Hold', duration: 2, tip: 'Rest in quiet stillness', scale: 0.78, lungScaleX: 0.88, lungScaleY: 0.88, diaphragmY: 0 }
                 ]
             }
         };
@@ -2049,6 +2236,7 @@
             }
 
             soundEngine.playPhaseTone(step.phase);
+            voiceEngine.speak(step.phase === 'Hold' ? 'Hold breath' : step.phase);
 
             if ('vibrate' in navigator) {
                 try { navigator.vibrate(35); } catch (e) {}
@@ -2524,6 +2712,241 @@
             });
         }
 
+        // --- FEATURE 1: SPOKEN VOICE GUIDANCE ---
+        const voiceToggleBtn = document.getElementById('voiceToggleBtn');
+        if (voiceToggleBtn) {
+            voiceToggleBtn.addEventListener('click', () => {
+                voiceEngine.enabled = !voiceEngine.enabled;
+                if (voiceEngine.enabled) {
+                    voiceToggleBtn.className = "py-1 px-3 rounded-full bg-teal-500/20 border border-teal-400/50 text-teal-300 transition text-xs font-semibold active:scale-95";
+                    voiceToggleBtn.textContent = "On 🎙️";
+                    voiceEngine.speak("Voice guidance enabled");
+                } else {
+                    voiceToggleBtn.className = "py-1 px-3 rounded-full bg-white/5 border border-white/10 text-slate-300 transition text-xs font-semibold active:scale-95";
+                    voiceToggleBtn.textContent = "Off 🎙️";
+                }
+            });
+        }
+
+        // --- FEATURE 2: CUSTOM RHYTHM BUILDER ---
+        const customModal = document.getElementById('customModal');
+        const closeCustomBtn = document.getElementById('closeCustomBtn');
+        const customPatternBtn = document.getElementById('customPatternBtn');
+        const applyCustomBtn = document.getElementById('applyCustomBtn');
+        const customInhaleSlider = document.getElementById('customInhaleSlider');
+        const customHold1Slider = document.getElementById('customHold1Slider');
+        const customExhaleSlider = document.getElementById('customExhaleSlider');
+        const customHold2Slider = document.getElementById('customHold2Slider');
+        const customInhaleVal = document.getElementById('customInhaleVal');
+        const customHold1Val = document.getElementById('customHold1Val');
+        const customExhaleVal = document.getElementById('customExhaleVal');
+        const customHold2Val = document.getElementById('customHold2Val');
+        const customPatternBadge = document.getElementById('customPatternBadge');
+
+        function updateCustomSliderLabels() {
+            if (customInhaleVal) customInhaleVal.textContent = `${parseFloat(customInhaleSlider.value).toFixed(1)}s`;
+            if (customHold1Val) customHold1Val.textContent = `${parseFloat(customHold1Slider.value).toFixed(1)}s`;
+            if (customExhaleVal) customExhaleVal.textContent = `${parseFloat(customExhaleSlider.value).toFixed(1)}s`;
+            if (customHold2Val) customHold2Val.textContent = `${parseFloat(customHold2Slider.value).toFixed(1)}s`;
+        }
+
+        [customInhaleSlider, customHold1Slider, customExhaleSlider, customHold2Slider].forEach(slider => {
+            if (slider) slider.addEventListener('input', updateCustomSliderLabels);
+        });
+
+        function openCustomModal() {
+            if (customModal) customModal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeCustomModal() {
+            if (customModal) customModal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        if (customPatternBtn) {
+            customPatternBtn.addEventListener('click', () => {
+                if (currentPatternKey === 'custom') {
+                    openCustomModal();
+                }
+            });
+        }
+        if (closeCustomBtn) closeCustomBtn.addEventListener('click', closeCustomModal);
+        if (customModal) {
+            customModal.addEventListener('click', (e) => {
+                if (e.target === customModal) closeCustomModal();
+            });
+        }
+
+        if (applyCustomBtn) {
+            applyCustomBtn.addEventListener('click', () => {
+                const inh = parseFloat(customInhaleSlider.value);
+                const h1 = parseFloat(customHold1Slider.value);
+                const exh = parseFloat(customExhaleSlider.value);
+                const h2 = parseFloat(customHold2Slider.value);
+
+                const newSteps = [
+                    { phase: 'Inhale', duration: inh, tip: 'Custom inhalation', scale: 1.22, lungScaleX: 1.18, lungScaleY: 1.15, diaphragmY: 14 }
+                ];
+                if (h1 > 0) {
+                    newSteps.push({ phase: 'Hold', duration: h1, tip: 'Keep breath steady', scale: 1.22, lungScaleX: 1.18, lungScaleY: 1.15, diaphragmY: 14 });
+                }
+                newSteps.push({ phase: 'Exhale', duration: exh, tip: 'Custom exhalation', scale: 0.78, lungScaleX: 0.88, lungScaleY: 0.88, diaphragmY: 0 });
+                if (h2 > 0) {
+                    newSteps.push({ phase: 'Hold', duration: h2, tip: 'Rest in quiet stillness', scale: 0.78, lungScaleX: 0.88, lungScaleY: 0.88, diaphragmY: 0 });
+                }
+
+                PATTERNS.custom.steps = newSteps;
+                const labelStr = `${inh} • ${h1} • ${exh} • ${h2}`;
+                PATTERNS.custom.label = labelStr;
+                if (customPatternBadge) customPatternBadge.textContent = labelStr;
+
+                closeCustomModal();
+                switchPattern('custom');
+            });
+        }
+
+        // --- FEATURE 3: MINDFULNESS ANALYTICS DASHBOARD ---
+        const analyticsModal = document.getElementById('analyticsModal');
+        const analyticsBtn = document.getElementById('analyticsBtn');
+        const closeAnalyticsBtn = document.getElementById('closeAnalyticsBtn');
+        const weeklyBarChart = document.getElementById('weeklyBarChart');
+        const analyticsTotalMins = document.getElementById('analyticsTotalMins');
+        const moodBreakdownContainer = document.getElementById('moodBreakdownContainer');
+
+        function openAnalyticsModal() {
+            renderAnalyticsDashboard();
+            if (analyticsModal) analyticsModal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeAnalyticsModal() {
+            if (analyticsModal) analyticsModal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        if (analyticsBtn) analyticsBtn.addEventListener('click', openAnalyticsModal);
+        if (closeAnalyticsBtn) closeAnalyticsBtn.addEventListener('click', closeAnalyticsModal);
+        if (analyticsModal) {
+            analyticsModal.addEventListener('click', (e) => {
+                if (e.target === analyticsModal) closeAnalyticsModal();
+            });
+        }
+
+        function renderAnalyticsDashboard() {
+            const logs = getStoredLogs();
+            const now = new Date();
+            
+            const days = [];
+            let totalWeeklySecs = 0;
+            const moodCounts = {};
+
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(now.getDate() - i);
+                const dKey = getDayKey(d);
+                const dayName = d.toLocaleDateString(undefined, { weekday: 'short' });
+                
+                const dayLogs = logs.filter(l => (l.dayKey || getDayKey(new Date(l.timestamp))) === dKey);
+                const daySecs = dayLogs.reduce((acc, l) => acc + (l.durationSeconds || 0), 0);
+                totalWeeklySecs += daySecs;
+
+                days.push({ key: dKey, label: dayName, secs: daySecs, mins: Math.round(daySecs / 60) });
+            }
+
+            logs.forEach(l => {
+                if (l.mood) {
+                    moodCounts[l.mood] = (moodCounts[l.mood] || 0) + 1;
+                }
+            });
+
+            if (analyticsTotalMins) {
+                analyticsTotalMins.textContent = `${Math.round(totalWeeklySecs / 60)} mins this week`;
+            }
+
+            if (weeklyBarChart) {
+                weeklyBarChart.innerHTML = '';
+                const maxMins = Math.max(10, ...days.map(d => d.mins));
+
+                days.forEach(d => {
+                    const pct = Math.max(8, Math.round((d.mins / maxMins) * 100));
+                    const col = document.createElement('div');
+                    col.className = 'flex-1 flex flex-col items-center gap-1 group relative';
+                    col.innerHTML = `
+                        <div class="w-full bg-white/5 group-hover:bg-white/10 rounded-t-lg transition flex items-end justify-center relative overflow-hidden" style="height: 80px;">
+                            <div class="w-full bg-gradient-to-t from-teal-500 to-cyan-400 rounded-t-lg transition-all duration-500 shadow-[0_0_10px_rgba(45,212,191,0.3)]" style="height: ${pct}%;"></div>
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-400">${d.label}</span>
+                    `;
+                    weeklyBarChart.appendChild(col);
+                });
+            }
+
+            if (moodBreakdownContainer) {
+                moodBreakdownContainer.innerHTML = '';
+                const moods = Object.keys(moodCounts);
+                if (moods.length === 0) {
+                    moodBreakdownContainer.innerHTML = `<span class="text-slate-500 text-[11px] col-span-2">No mood data recorded yet.</span>`;
+                } else {
+                    const totalMoods = logs.length;
+                    moods.forEach(m => {
+                        const count = moodCounts[m];
+                        const pct = Math.round((count / totalMoods) * 100);
+                        const pill = document.createElement('div');
+                        pill.className = 'flex items-center justify-between p-2 rounded-xl bg-white/[0.03] border border-white/5 text-[11px]';
+                        pill.innerHTML = `
+                            <span>${m}</span>
+                            <span class="font-mono text-teal-300 font-medium">${pct}%</span>
+                        `;
+                        moodBreakdownContainer.appendChild(pill);
+                    });
+                }
+            }
+        }
+
+        // --- FEATURE 4: DAILY MINDFULNESS REMINDERS ---
+        const reminderBtn = document.getElementById('reminderBtn');
+
+        function setupDailyReminders() {
+            if (!('Notification' in window)) {
+                alert('Notifications are not supported in your browser.');
+                return;
+            }
+
+            if (Notification.permission === 'granted') {
+                sendTestReminder();
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        sendTestReminder();
+                    }
+                });
+            } else {
+                alert('Notification permissions were previously denied in browser settings.');
+            }
+        }
+
+        function sendTestReminder() {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification('Serene Breath Space 🌿', {
+                        body: 'Time for your daily 3-minute mindful breathing break!',
+                        icon: './favicon.svg',
+                        badge: './favicon.svg'
+                    });
+                });
+            } else {
+                new Notification('Serene Breath Space 🌿', {
+                    body: 'Time for your daily 3-minute mindful breathing break!',
+                    icon: './favicon.svg'
+                });
+            }
+
+            if (reminderBtn) {
+                const orig = reminderBtn.innerHTML;
+                reminderBtn.innerHTML = `<span class="text-[10px] text-amber-300">Set!</span>`;
+                setTimeout(() => { reminderBtn.innerHTML = orig; }, 1800);
+            }
+        }
+
+        if (reminderBtn) reminderBtn.addEventListener('click', setupDailyReminders);
+
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' && e.target === document.body) {
                 e.preventDefault();
@@ -2535,6 +2958,8 @@
                 closeSoundModal();
                 closeSavePrompt();
                 closeLoginModal();
+                closeCustomModal();
+                closeAnalyticsModal();
             }
         });
 
