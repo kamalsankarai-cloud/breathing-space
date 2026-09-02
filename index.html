@@ -191,13 +191,13 @@
             <form id="lockScreenForm" class="w-full space-y-3 text-left">
                 <div>
                     <label class="text-[11px] font-medium text-slate-300 mb-1 block">Your Name / Handle</label>
-                    <input id="lockNameInput" type="text" placeholder="e.g. Kamal" required autofocus
+                    <input id="lockNameInput" type="text" value="Kamal" placeholder="Name" required autofocus
                            class="w-full py-2.5 px-3.5 rounded-xl bg-white/5 border border-white/15 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400 transition">
                 </div>
 
                 <div>
                     <label class="text-[11px] font-medium text-slate-300 mb-1 block">Security Passcode (PIN)</label>
-                    <input id="lockPinInput" type="password" placeholder="Enter PIN (2603)" required maxlength="6"
+                    <input id="lockPinInput" type="password" placeholder="••••" required maxlength="6"
                            class="w-full tracking-widest font-mono py-2.5 px-3.5 rounded-xl bg-white/5 border border-white/15 text-teal-300 placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400 transition">
                 </div>
 
@@ -205,7 +205,7 @@
                     <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span>Incorrect PIN. Passcode is 2603.</span>
+                    <span>Incorrect PIN. Please try again.</span>
                 </div>
 
                 <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-teal-400 to-cyan-500 hover:from-teal-300 hover:to-cyan-400 text-slate-950 font-bold text-xs shadow-[0_4px_20px_rgba(45,212,191,0.3)] transition transform active:scale-95 mt-2">
@@ -870,19 +870,19 @@
             <form id="loginForm" class="space-y-3">
                 <div>
                     <label class="text-[11px] font-medium text-slate-300 mb-1 block">Your Name / Handle</label>
-                    <input id="userNameInput" type="text" placeholder="e.g. Kamal" required class="w-full py-2.5 px-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400/60 transition">
+                    <input id="userNameInput" type="text" value="Kamal" placeholder="Name" required class="w-full py-2.5 px-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400/60 transition">
                 </div>
 
                 <div>
                     <label class="text-[11px] font-medium text-slate-300 mb-1 block">Security Passcode (PIN)</label>
-                    <input id="userPinInput" type="password" placeholder="Enter PIN" required maxlength="6" class="w-full py-2.5 px-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400/60 transition">
+                    <input id="userPinInput" type="password" placeholder="••••" required maxlength="6" class="w-full py-2.5 px-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400/60 transition">
                 </div>
 
                 <div id="pinErrorMsg" class="hidden text-[11px] font-medium text-rose-400 bg-rose-500/10 border border-rose-500/20 py-1.5 px-3 rounded-lg flex items-center gap-1.5">
                     <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span>Incorrect PIN. Please enter passcode 2603.</span>
+                    <span>Incorrect PIN. Please try again.</span>
                 </div>
 
                 <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-teal-400 to-cyan-500 text-slate-950 font-semibold text-xs shadow-md transition active:scale-95">
@@ -2460,11 +2460,13 @@
                 if (activeUserName) activeUserName.textContent = currentUserProfile.name;
                 if (loggedInUserCard) loggedInUserCard.classList.remove('hidden');
                 if (userNameInput) userNameInput.value = currentUserProfile.name;
+                if (lockNameInput) lockNameInput.value = currentUserProfile.name;
             } else {
                 if (authBtnLabel) authBtnLabel.textContent = 'Sign In';
-                if (activeUserName) activeUserName.textContent = 'Guest';
+                if (activeUserName) activeUserName.textContent = 'Kamal';
                 if (loggedInUserCard) loggedInUserCard.classList.add('hidden');
-                if (userNameInput) userNameInput.value = '';
+                if (userNameInput) userNameInput.value = 'Kamal';
+                if (lockNameInput) lockNameInput.value = 'Kamal';
             }
         }
 
