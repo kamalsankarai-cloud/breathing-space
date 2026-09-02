@@ -830,8 +830,15 @@
                 </div>
 
                 <div>
-                    <label class="text-[11px] font-medium text-slate-300 mb-1 block">Passcode (Optional)</label>
-                    <input id="userPinInput" type="password" placeholder="••••" class="w-full py-2.5 px-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400/60 transition">
+                    <label class="text-[11px] font-medium text-slate-300 mb-1 block">Security Passcode (PIN)</label>
+                    <input id="userPinInput" type="password" placeholder="Enter PIN" required maxlength="6" class="w-full py-2.5 px-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-teal-400/60 transition">
+                </div>
+
+                <div id="pinErrorMsg" class="hidden text-[11px] font-medium text-rose-400 bg-rose-500/10 border border-rose-500/20 py-1.5 px-3 rounded-lg flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Incorrect PIN. Please enter passcode 2603.</span>
                 </div>
 
                 <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-teal-400 to-cyan-500 text-slate-950 font-semibold text-xs shadow-md transition active:scale-95">
@@ -2429,12 +2436,28 @@
             });
         }
 
+        const REQUIRED_PIN = '2603';
+
         if (loginForm) {
             loginForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const name = userNameInput.value.trim();
-                const pin = userPinInput.value.trim();
+                const pin = userPinInput ? userPinInput.value.trim() : '';
+                const pinErrorMsg = document.getElementById('pinErrorMsg');
+
                 if (!name) return;
+
+                if (pin !== REQUIRED_PIN) {
+                    if (pinErrorMsg) pinErrorMsg.classList.remove('hidden');
+                    if (userPinInput) {
+                        userPinInput.classList.add('border-rose-500/60');
+                        userPinInput.focus();
+                    }
+                    return;
+                }
+
+                if (pinErrorMsg) pinErrorMsg.classList.add('hidden');
+                if (userPinInput) userPinInput.classList.remove('border-rose-500/60');
 
                 saveUserProfile({ name, pin, signedInAt: new Date().toISOString() });
                 closeLoginModal();
