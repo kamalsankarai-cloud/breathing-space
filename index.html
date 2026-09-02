@@ -2069,6 +2069,11 @@
         }
 
         function startSession() {
+            if (!currentUserProfile || !currentUserProfile.name) {
+                openLoginModal();
+                return;
+            }
+
             soundEngine.init();
             if (soundEngine.ambientType !== 'off') {
                 soundEngine.startAmbient(soundEngine.ambientType);
@@ -2494,6 +2499,12 @@
             setRingProgress(0);
             renderDayWiseLogs();
             setupCloudPersistence();
+
+            if (!currentUserProfile || !currentUserProfile.name) {
+                setTimeout(() => {
+                    openLoginModal();
+                }, 300);
+            }
 
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
