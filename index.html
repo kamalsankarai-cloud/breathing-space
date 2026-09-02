@@ -171,6 +171,44 @@
 </head>
 <body class="min-h-screen text-slate-100 flex flex-col justify-between relative overflow-hidden">
 
+    <!-- Full-Screen Application Security Lockscreen Gate -->
+    <div id="appLockScreen" class="fixed inset-0 z-[100] bg-[#080c14] flex flex-col items-center justify-center p-4 text-center transition-opacity duration-500">
+        <!-- Ambient glow behind lockscreen -->
+        <div class="ambient-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[480px] h-[340px] sm:h-[480px] rounded-full opacity-35 bg-teal-500 pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-sm w-full bg-slate-900/90 border border-teal-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl flex flex-col items-center">
+            
+            <!-- Branding Icon -->
+            <div class="w-14 h-14 rounded-2xl bg-teal-500/20 border border-teal-400/40 flex items-center justify-center text-teal-300 mb-4 shadow-[0_0_20px_rgba(45,212,191,0.25)]">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+
+            <h2 class="font-display text-xl sm:text-2xl font-bold text-white mb-1">Serene Breath Space</h2>
+            <p class="text-xs text-slate-400 mb-6">Enter security passcode to view the page</p>
+
+            <form id="lockScreenForm" class="w-full space-y-4">
+                <div>
+                    <label class="sr-only">Security PIN</label>
+                    <input id="lockPinInput" type="password" placeholder="••••" required maxlength="6" autofocus
+                           class="w-full text-center tracking-[0.4em] font-mono text-lg py-3 px-4 rounded-2xl bg-white/5 border border-white/15 text-teal-300 placeholder-slate-500 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400 transition">
+                </div>
+
+                <div id="lockPinErrorMsg" class="hidden text-xs font-medium text-rose-400 bg-rose-500/10 border border-rose-500/20 py-2 px-3 rounded-xl flex items-center justify-center gap-1.5">
+                    <svg class="w-4 h-4 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Incorrect PIN. Passcode is 2603.</span>
+                </div>
+
+                <button type="submit" class="w-full py-3 rounded-2xl bg-gradient-to-r from-teal-400 to-cyan-500 hover:from-teal-300 hover:to-cyan-400 text-slate-950 font-bold text-sm shadow-[0_4px_20px_rgba(45,212,191,0.3)] transition transform active:scale-95">
+                    Unlock & View Page
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Ambient backdrop and floating micro-particles -->
     <div class="fixed inset-0 pointer-events-none z-0">
         <div id="ambientBackdrop" class="ambient-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[540px] h-[340px] sm:h-[540px] rounded-full opacity-40 bg-teal-500"></div>
@@ -2492,7 +2530,43 @@
             }
         });
 
+        const appLockScreen = document.getElementById('appLockScreen');
+        const lockScreenForm = document.getElementById('lockScreenForm');
+        const lockPinInput = document.getElementById('lockPinInput');
+        const lockPinErrorMsg = document.getElementById('lockPinErrorMsg');
+        const APP_LOCK_PIN = '2603';
+
+        function checkLockScreenStatus() {
+            const isUnlocked = sessionStorage.getItem('serene_page_unlocked') === 'true';
+            if (isUnlocked) {
+                if (appLockScreen) appLockScreen.classList.add('opacity-0', 'pointer-events-none');
+            } else {
+                if (appLockScreen) appLockScreen.classList.remove('opacity-0', 'pointer-events-none');
+                if (lockPinInput) setTimeout(() => lockPinInput.focus(), 150);
+            }
+        }
+
+        if (lockScreenForm) {
+            lockScreenForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const pin = lockPinInput ? lockPinInput.value.trim() : '';
+                if (pin === APP_LOCK_PIN) {
+                    sessionStorage.setItem('serene_page_unlocked', 'true');
+                    if (lockPinErrorMsg) lockPinErrorMsg.classList.add('hidden');
+                    if (appLockScreen) appLockScreen.classList.add('opacity-0', 'pointer-events-none');
+                } else {
+                    if (lockPinErrorMsg) lockPinErrorMsg.classList.remove('hidden');
+                    if (lockPinInput) {
+                        lockPinInput.classList.add('border-rose-500');
+                        lockPinInput.focus();
+                        lockPinInput.value = '';
+                    }
+                }
+            });
+        }
+
         function initApp() {
+            checkLockScreenStatus();
             loadUserProfile();
             const initialPattern = PATTERNS[currentPatternKey];
             if (countdownNumber) countdownNumber.textContent = initialPattern.steps[0].duration;
