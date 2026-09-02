@@ -2540,6 +2540,11 @@
             const isUnlocked = sessionStorage.getItem('serene_page_unlocked') === 'true';
             if (isUnlocked) {
                 if (appLockScreen) appLockScreen.classList.add('opacity-0', 'pointer-events-none');
+                if (!currentUserProfile || !currentUserProfile.name) {
+                    setTimeout(() => {
+                        openLoginModal();
+                    }, 350);
+                }
             } else {
                 if (appLockScreen) appLockScreen.classList.remove('opacity-0', 'pointer-events-none');
                 if (lockPinInput) setTimeout(() => lockPinInput.focus(), 150);
@@ -2554,6 +2559,12 @@
                     sessionStorage.setItem('serene_page_unlocked', 'true');
                     if (lockPinErrorMsg) lockPinErrorMsg.classList.add('hidden');
                     if (appLockScreen) appLockScreen.classList.add('opacity-0', 'pointer-events-none');
+
+                    if (!currentUserProfile || !currentUserProfile.name) {
+                        setTimeout(() => {
+                            openLoginModal();
+                        }, 350);
+                    }
                 } else {
                     if (lockPinErrorMsg) lockPinErrorMsg.classList.remove('hidden');
                     if (lockPinInput) {
