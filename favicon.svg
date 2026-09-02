@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+    <rect width="512" height="512" rx="128" fill="#080c14"/>
+    <circle cx="256" cy="256" r="210" fill="rgba(45,212,191,0.06)" stroke="#2dd4bf" stroke-width="10" stroke-opacity="0.3"/>
+    <circle cx="256" cy="256" r="140" fill="url(#orbGrad)" stroke="#2dd4bf" stroke-width="6"/>
+    <defs>
+        <radialGradient id="orbGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.75"/>
+            <stop offset="100%" stop-color="#0f766e" stop-opacity="0.15"/>
+        </radialGradient>
+    </defs>
+    <!-- Lung silhouette -->
+    <path d="M 235 150 C 205 130 170 140 150 170 C 120 220 110 280 115 340 C 120 375 145 395 180 395 C 210 395 232 380 238 355 M 277 150 C 307 130 342 140 362 170 C 392 220 402 280 397 340 C 392 375 367 395 332 395 C 302 395 280 380 274 355" stroke="#ffffff" stroke-width="16" stroke-linecap="round" fill="none"/>
+    <path d="M 240 100 L 240 210 Q 240 230 220 250 M 272 100 L 272 210 Q 272 230 292 250" stroke="#5eead4" stroke-width="14" stroke-linecap="round" fill="none"/>
+</svg>

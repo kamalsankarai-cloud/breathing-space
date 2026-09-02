@@ -1,0 +1,2345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serene | Mindful Breathing Space</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#080c14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Serene">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #080c14;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ambient-glow {
+            transition: background 1.6s ease, transform 1.2s ease, opacity 1.2s ease;
+            filter: blur(80px);
+        }
+
+        /* Fluid Breathing Orb Mechanics */
+        .orb-container {
+            transition: transform 0.15s linear, border-color 0.8s ease, box-shadow 0.8s ease;
+            will-change: transform;
+        }
+
+        .orb-liquid-wave {
+            transition: height 0.08s linear, background 0.8s ease;
+            will-change: height;
+        }
+
+        @keyframes surfaceShimmer {
+            0% { transform: translateX(-25%); }
+            100% { transform: translateX(25%); }
+        }
+
+        .liquid-surface-wave {
+            animation: surfaceShimmer 3.5s ease-in-out infinite alternate;
+        }
+
+        /* Anatomical Lungs mechanics with SVG view-box coordinate safety */
+        .lung-lobe {
+            transition: transform 0.12s linear, fill 0.8s ease, stroke 0.8s ease, filter 0.8s ease;
+            transform-box: view-box;
+            will-change: transform;
+        }
+
+        .right-lung-group {
+            transform-origin: 105px 145px;
+        }
+
+        .left-lung-group {
+            transform-origin: 195px 145px;
+        }
+
+        .diaphragm-dome {
+            transition: transform 0.12s linear, fill 0.8s ease;
+            transform-box: view-box;
+            transform-origin: 150px 245px;
+            will-change: transform;
+        }
+
+        /* SVG Progress Ring Smoothness */
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.1s linear, stroke 0.6s ease;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Kinetic Text Shimmer and Pop */
+        @keyframes textShimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes phasePop {
+            0% { transform: scale(0.88); opacity: 0.25; filter: blur(3px); }
+            60% { transform: scale(1.04); opacity: 1; filter: blur(0px); }
+            100% { transform: scale(1.0); opacity: 1; }
+        }
+
+        @keyframes rippleWave {
+            0% { transform: scale(0.72); opacity: 0.8; }
+            100% { transform: scale(1.38); opacity: 0; }
+        }
+
+        /* Oxygen current flow lines */
+        @keyframes oxygenInflow {
+            0% { stroke-dashoffset: 60; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        @keyframes oxygenOutflow {
+            0% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: 60; }
+        }
+
+        .flow-inhale {
+            stroke-dasharray: 6 8;
+            animation: oxygenInflow 1.1s linear infinite;
+        }
+
+        .flow-exhale {
+            stroke-dasharray: 6 8;
+            animation: oxygenOutflow 1.4s linear infinite;
+        }
+
+        .flow-still {
+            stroke-dasharray: 4 6;
+            animation: none;
+            opacity: 0.35;
+        }
+
+        .animate-shimmer {
+            background-size: 200% 200%;
+            animation: textShimmer 4.5s ease infinite;
+        }
+
+        .phase-pop {
+            animation: phasePop 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .ripple-circle {
+            animation: rippleWave 3s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
+        }
+
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.3; }
+            50% { transform: translateY(-15px) scale(1.1); opacity: 0.7; }
+        }
+
+        .particle {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-100 flex flex-col justify-between relative overflow-hidden">
+
+    <!-- Ambient backdrop and floating micro-particles -->
+    <div class="fixed inset-0 pointer-events-none z-0">
+        <div id="ambientBackdrop" class="ambient-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[540px] h-[340px] sm:h-[540px] rounded-full opacity-40 bg-teal-500"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,#1e293b25,transparent_70%)]"></div>
+        <div class="particle absolute top-[15%] left-[20%] w-1.5 h-1.5 rounded-full bg-teal-300"></div>
+        <div class="particle absolute top-[28%] right-[18%] w-2 h-2 rounded-full bg-cyan-200" style="animation-delay: 2s;"></div>
+        <div class="particle absolute bottom-[25%] left-[25%] w-1 h-1 rounded-full bg-indigo-300" style="animation-delay: 3.5s;"></div>
+        <div class="particle absolute bottom-[20%] right-[22%] w-1.5 h-1.5 rounded-full bg-sky-200" style="animation-delay: 1.2s;"></div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="relative z-20 w-full max-w-4xl mx-auto px-4 sm:px-6 pt-4 sm:pt-5 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(45,212,191,0.2)] relative">
+                <svg class="w-5 h-5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span id="headerCloudDot" class="w-1.5 h-1.5 rounded-full bg-slate-500 absolute top-1 right-1" title="Storage status"></span>
+            </div>
+            <div>
+                <h1 class="font-display font-bold tracking-wide text-lg sm:text-xl text-white">Serene</h1>
+                <p class="text-[11px] font-medium tracking-wider uppercase text-teal-300/80">Breath Space</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-1.5 sm:gap-2">
+            <!-- View Mode Switcher: Real Lungs vs Minimal Zen Orb -->
+            <button id="viewToggleBtn" aria-label="Toggle between Real Lungs and Zen Orb view" class="py-2 px-2.5 sm:px-3 rounded-full bg-teal-500/15 hover:bg-teal-500/25 border border-teal-400/40 text-teal-200 hover:text-white transition backdrop-blur-md flex items-center gap-1.5 active:scale-95" title="Switch between Real Lungs and Zen Orb visualizer">
+                <span id="viewModeIcon" class="text-sm">🫁</span>
+                <span id="viewModeText" class="text-xs font-medium tracking-wide hidden sm:inline">Lungs</span>
+            </button>
+
+            <!-- Day-Wise Session Log Trigger -->
+            <button id="logBtn" aria-label="Open Day-Wise Log" class="relative py-2 px-2.5 sm:px-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition backdrop-blur-md flex items-center gap-1.5 active:scale-95">
+                <svg class="w-4 h-4 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span class="text-xs font-medium tracking-wide hidden sm:inline">Daily Log</span>
+                <span id="logCountBadge" class="text-[10px] bg-teal-500/30 border border-teal-400/40 text-teal-300 font-semibold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">0</span>
+            </button>
+
+            <!-- Sound and Music Studio Trigger -->
+            <button id="soundModalBtn" aria-label="Open Sound and Music Studio" class="relative py-2 px-2.5 sm:px-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition backdrop-blur-md flex items-center gap-1.5 active:scale-95">
+                <span class="relative flex h-2 w-2">
+                    <span id="musicActivePing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75 hidden"></span>
+                    <span id="musicActiveDot" class="relative inline-flex rounded-full h-2 w-2 bg-teal-400 hidden"></span>
+                </span>
+                <svg class="w-4 h-4 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                </svg>
+                <span class="text-xs font-medium tracking-wide hidden md:inline">Sounds</span>
+            </button>
+
+            <!-- Quick Audio Mute Toggle -->
+            <button id="soundToggleBtn" aria-label="Toggle chime and ambient sound" class="p-2 sm:p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition backdrop-blur-md active:scale-95">
+                <svg id="soundIconOn" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+                <svg id="soundIconOff" class="w-4 h-4 sm:w-5 sm:h-5 hidden text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                </svg>
+            </button>
+
+            <!-- Guide Modal Trigger -->
+            <button id="infoBtn" aria-label="Pattern science and technique details" class="p-2 sm:p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition backdrop-blur-md active:scale-95">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-1.5 max-w-lg mx-auto w-full">
+        
+        <!-- DEDICATED PHASE HUD: Placed completely OUTSIDE of the visualizer stage to eliminate any visual overlap -->
+        <div id="phaseHud" class="w-full flex flex-col items-center justify-center text-center mb-1 sm:mb-2 z-30 transition-all duration-300">
+            
+            <!-- Phase Badge -->
+            <div id="phaseBadge" class="inline-flex items-center gap-1.5 py-0.5 px-3 rounded-full bg-teal-500/20 border border-teal-400/40 text-[10px] font-semibold tracking-wider uppercase text-teal-300 mb-1 transition-all duration-500 shadow-sm">
+                <span id="phaseBadgeIcon" class="text-xs leading-none">↑</span>
+                <span id="phaseBadgeLabel">EXPANDING</span>
+            </div>
+
+            <!-- Primary Phase Title & Countdown Counter (Side-by-side, bold, completely unobstructed) -->
+            <div class="flex items-center justify-center gap-3">
+                <h2 id="phaseText" class="font-display text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 bg-clip-text text-transparent animate-shimmer drop-shadow-[0_0_20px_rgba(45,212,191,0.5)] transition-all duration-300 select-none">
+                    Inhale
+                </h2>
+                
+                <div class="h-6 w-px bg-white/15"></div>
+
+                <div class="flex items-baseline font-display drop-shadow">
+                    <span id="countdownNumber" class="text-3xl sm:text-4xl font-light text-slate-100 tabular-nums">4</span>
+                    <span class="text-xs text-slate-400 ml-1 font-sans">sec</span>
+                </div>
+            </div>
+
+            <!-- Context Cue & Physiological Tip -->
+            <div class="flex items-center justify-center gap-2 mt-0.5">
+                <span id="instructionText" class="text-[11px] sm:text-xs font-medium tracking-wide text-teal-200/90 transition-all duration-300 drop-shadow">
+                    Deep Inhalation
+                </span>
+                <span class="text-slate-600 text-xs">•</span>
+                <span id="breathTip" class="text-[11px] sm:text-xs text-slate-400 font-light truncate drop-shadow">
+                    Expand your diaphragm
+                </span>
+            </div>
+        </div>
+
+        <!-- VISUALIZER STAGE: Completely unobstructed anatomical lungs and clean zen orb -->
+        <div class="relative w-72 h-72 sm:w-80 sm:h-80 md:w-[340px] md:h-[340px] flex items-center justify-center my-auto">
+            
+            <!-- Expanding Ambient Ripples -->
+            <div id="rippleContainer" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 transition-opacity duration-700">
+                <div class="ripple-circle absolute w-60 h-60 sm:w-72 sm:h-72 rounded-full border border-teal-400/25"></div>
+                <div class="ripple-circle absolute w-60 h-60 sm:w-72 sm:h-72 rounded-full border border-cyan-400/20" style="animation-delay: 1.5s;"></div>
+            </div>
+
+            <!-- SVG Progress Ring with Dial Ticks & Traveling Guide Bead -->
+            <svg class="absolute inset-0 w-full h-full pointer-events-none drop-shadow-[0_0_20px_rgba(45,212,191,0.3)] z-20" viewBox="0 0 240 240">
+                <!-- Radial Dial Ticks -->
+                <g stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.2">
+                    <line x1="120" y1="5" x2="120" y2="12" />
+                    <line x1="120" y1="228" x2="120" y2="235" />
+                    <line x1="5" y1="120" x2="12" y2="120" />
+                    <line x1="228" y1="120" x2="235" y2="120" />
+                    <line x1="38" y1="38" x2="43" y2="43" stroke-width="0.8" opacity="0.6"/>
+                    <line x1="202" y1="38" x2="197" y2="43" stroke-width="0.8" opacity="0.6"/>
+                    <line x1="38" y1="202" x2="43" y2="197" stroke-width="0.8" opacity="0.6"/>
+                    <line x1="202" y1="202" x2="197" y2="197" stroke-width="0.8" opacity="0.6"/>
+                </g>
+
+                <!-- Inactive Track Ring -->
+                <circle cx="120" cy="120" r="112" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="4.5" />
+                
+                <!-- Dynamic Circle Line (Fills on Inhale, Holds, Reverses on Exhale) -->
+                <circle id="progressRing" class="progress-ring-circle" cx="120" cy="120" r="112" fill="none" stroke="#2dd4bf" stroke-width="5" stroke-linecap="round" stroke-dasharray="703.71" stroke-dashoffset="703.71" />
+                
+                <!-- Traveling Guide Bead -->
+                <circle id="ringHeadGlow" cx="120" cy="8" r="9" fill="#2dd4bf" opacity="0" filter="blur(2px)"/>
+                <circle id="ringHeadBead" cx="120" cy="8" r="5" fill="#ffffff" stroke="#2dd4bf" stroke-width="2.5" opacity="0"/>
+            </svg>
+
+            <!-- REAL ANATOMICAL LUNGS VISUALIZER (100% Completely Unobstructed) -->
+            <div id="lungsVisualizer" class="absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-opacity duration-500">
+                <svg class="w-64 h-64 sm:w-72 sm:h-72 md:w-[300px] md:h-[300px] drop-shadow-[0_0_30px_rgba(45,212,191,0.25)]" viewBox="0 0 300 280">
+                    <defs>
+                        <radialGradient id="rightLungGrad" cx="45%" cy="45%" r="65%">
+                            <stop id="rGradStop1" offset="0%" stop-color="#2dd4bf" stop-opacity="0.55" />
+                            <stop id="rGradStop2" offset="70%" stop-color="#0f766e" stop-opacity="0.30" />
+                            <stop id="rGradStop3" offset="100%" stop-color="#134e4a" stop-opacity="0.12" />
+                        </radialGradient>
+                        
+                        <radialGradient id="leftLungGrad" cx="55%" cy="45%" r="65%">
+                            <stop id="lGradStop1" offset="0%" stop-color="#2dd4bf" stop-opacity="0.55" />
+                            <stop id="lGradStop2" offset="70%" stop-color="#0f766e" stop-opacity="0.30" />
+                            <stop id="lGradStop3" offset="100%" stop-color="#134e4a" stop-opacity="0.12" />
+                        </radialGradient>
+
+                        <filter id="alveolarGlow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="3.5" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                    </defs>
+
+                    <!-- Translucent Thoracic Rib Cage Outline -->
+                    <g opacity="0.12" stroke="#94a3b8" stroke-width="1.8" fill="none" stroke-linecap="round">
+                        <path d="M 125 55 C 80 60 55 85 52 105" />
+                        <path d="M 175 55 C 220 60 245 85 248 105" />
+                        <path d="M 130 90 C 70 98 46 128 45 155" />
+                        <path d="M 170 90 C 230 98 254 128 255 155" />
+                        <path d="M 132 130 C 65 142 42 175 42 205" />
+                        <path d="M 168 130 C 235 142 258 175 258 205" />
+                    </g>
+
+                    <!-- RIGHT LUNG (3 Lobes: Superior, Middle, Inferior) -->
+                    <g id="rightLungLobe" class="lung-lobe right-lung-group">
+                        <path id="rightLungPath" d="M 140 48 C 122 34 94 38 78 68 C 58 106 50 158 52 202 C 54 228 72 242 98 244 C 120 246 138 238 142 222 C 146 195 144 140 142 100 Z" 
+                              fill="url(#rightLungGrad)" stroke="#2dd4bf" stroke-width="1.8" stroke-linejoin="round" filter="url(#alveolarGlow)" />
+                        
+                        <!-- Interlobar Fissures -->
+                        <path d="M 54 135 C 75 140 110 145 140 152" stroke="#5eead4" stroke-width="1" stroke-opacity="0.35" fill="none" stroke-dasharray="3 3"/>
+                        <path d="M 68 185 C 95 180 120 188 141 202" stroke="#5eead4" stroke-width="1" stroke-opacity="0.35" fill="none" stroke-dasharray="3 3"/>
+
+                        <!-- Bronchial Branchings -->
+                        <g stroke="#99f6e4" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.6">
+                            <path d="M 135 105 Q 110 115 95 130" />
+                            <path d="M 110 115 Q 92 102 85 85" />
+                            <path d="M 95 130 Q 82 145 75 170" />
+                            <path d="M 100 128 Q 112 155 110 185" />
+                            <path d="M 110 185 Q 95 205 90 225" />
+                        </g>
+
+                        <!-- Terminal Alveoli Clusters -->
+                        <g id="rightAlveoli" fill="#5eead4" opacity="0.85">
+                            <circle cx="85" cy="85" r="2.2" />
+                            <circle cx="75" cy="170" r="2.5" />
+                            <circle cx="90" cy="225" r="2.5" />
+                            <circle cx="68" cy="120" r="2" />
+                            <circle cx="118" cy="205" r="2.2" />
+                        </g>
+                    </g>
+
+                    <!-- LEFT LUNG (2 Lobes with Anatomical Cardiac Notch) -->
+                    <g id="leftLungLobe" class="lung-lobe left-lung-group">
+                        <path id="leftLungPath" d="M 160 48 C 178 34 206 38 222 68 C 242 106 250 158 248 202 C 246 228 228 242 202 244 C 180 246 166 235 162 216 C 158 195 168 180 166 160 C 164 142 156 125 158 100 Z" 
+                              fill="url(#leftLungGrad)" stroke="#2dd4bf" stroke-width="1.8" stroke-linejoin="round" filter="url(#alveolarGlow)" />
+                        
+                        <!-- Left Oblique Fissure -->
+                        <path d="M 235 118 C 210 148 185 182 165 200" stroke="#5eead4" stroke-width="1" stroke-opacity="0.35" fill="none" stroke-dasharray="3 3"/>
+
+                        <!-- Left Bronchial Tree -->
+                        <g stroke="#99f6e4" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.6">
+                            <path d="M 165 105 Q 190 115 205 130" />
+                            <path d="M 190 115 Q 208 102 215 85" />
+                            <path d="M 205 130 Q 218 145 225 170" />
+                            <path d="M 200 128 Q 188 155 190 185" />
+                            <path d="M 190 185 Q 205 205 210 225" />
+                        </g>
+
+                        <!-- Terminal Alveoli Clusters -->
+                        <g id="leftAlveoli" fill="#5eead4" opacity="0.85">
+                            <circle cx="215" cy="85" r="2.2" />
+                            <circle cx="225" cy="170" r="2.5" />
+                            <circle cx="210" cy="225" r="2.5" />
+                            <circle cx="232" cy="120" r="2" />
+                            <circle cx="182" cy="205" r="2.2" />
+                        </g>
+                    </g>
+
+                    <!-- TRACHEA, CARINA AND OXYGEN FLOW STREAMLINES -->
+                    <g id="tracheaTree">
+                        <path d="M 144 14 L 144 86 Q 144 95 135 105 L 126 114" stroke="#5eead4" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.85"/>
+                        <path d="M 156 14 L 156 86 Q 156 95 165 105 L 174 114" stroke="#5eead4" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.85"/>
+                        
+                        <!-- Cartilaginous rings -->
+                        <line x1="144" y1="26" x2="156" y2="26" stroke="#99f6e4" stroke-width="1.6" opacity="0.7"/>
+                        <line x1="144" y1="40" x2="156" y2="40" stroke="#99f6e4" stroke-width="1.6" opacity="0.7"/>
+                        <line x1="144" y1="54" x2="156" y2="54" stroke="#99f6e4" stroke-width="1.6" opacity="0.7"/>
+                        <line x1="144" y1="68" x2="156" y2="68" stroke="#99f6e4" stroke-width="1.6" opacity="0.7"/>
+                        <line x1="144" y1="82" x2="156" y2="82" stroke="#99f6e4" stroke-width="1.6" opacity="0.7"/>
+
+                        <!-- Kinetic Oxygen Streams -->
+                        <g id="oxygenStreams" class="flow-inhale" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.95">
+                            <path d="M 150 16 L 150 88 Q 150 96 132 108 L 115 120" />
+                            <path d="M 150 16 L 150 88 Q 150 96 168 108 L 185 120" />
+                        </g>
+                    </g>
+
+                    <!-- RESPIRATORY DIAPHRAGM MUSCLE DOME -->
+                    <path id="diaphragmMuscle" class="diaphragm-dome" d="M 45 248 Q 150 220 255 248 Q 150 236 45 248 Z" 
+                          fill="#14b8a6" fill-opacity="0.4" stroke="#2dd4bf" stroke-width="1.8" filter="url(#alveolarGlow)" />
+                </svg>
+            </div>
+
+            <!-- DEDICATED ZEN ORB VISUALIZER (Fluid Volume Fill, Hold & Reverse) -->
+            <div id="orbVisualizer" class="absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-opacity duration-500 hidden">
+                <div id="orbContainer" class="orb-container relative w-52 h-52 sm:w-60 sm:h-60 md:w-64 md:h-64 rounded-full border-2 border-teal-400/40 overflow-hidden shadow-[0_0_50px_rgba(45,212,191,0.25)] backdrop-blur-md bg-slate-950/60 flex items-end">
+                    
+                    <!-- Dynamic Air/Liquid Volume Fill that Rises, Holds, and Empties -->
+                    <div id="orbLiquidFill" class="orb-liquid-wave w-full bg-gradient-to-t from-teal-500/60 via-teal-400/40 to-cyan-300/30 relative" style="height: 0%;">
+                        <!-- Wavy meniscus line at liquid top -->
+                        <div id="orbLiquidSurface" class="liquid-surface-wave absolute top-0 left-[-25%] right-[-25%] h-3.5 -translate-y-1/2 bg-teal-200/40 rounded-full blur-[1px]"></div>
+                    </div>
+                    
+                    <!-- Radial Glass Ambient Lighting -->
+                    <div id="orbInnerGlow" class="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_center,rgba(45,212,191,0.2),transparent_75%)] pointer-events-none"></div>
+                    
+                    <!-- Orbital Reflection Rim -->
+                    <div class="absolute inset-0 rounded-full border border-white/10 pointer-events-none"></div>
+
+                    <!-- Clean internal capacity readout -->
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <span id="orbAirPercent" class="text-xs font-mono font-medium text-white/50 tracking-wider">0%</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Session Cycles & Elapsed Timer Strip -->
+        <div class="flex items-center justify-center gap-8 py-2 px-6 rounded-2xl bg-white/[0.03] border border-white/[0.07] backdrop-blur-md mb-2 sm:mb-3 text-center">
+            <div>
+                <p class="text-[10px] uppercase font-semibold tracking-wider text-slate-400">Cycles</p>
+                <p id="cycleCount" class="text-base sm:text-lg font-display font-medium text-teal-300 tabular-nums">0</p>
+            </div>
+            <div class="h-6 w-px bg-white/10"></div>
+            <div>
+                <p class="text-[10px] uppercase font-semibold tracking-wider text-slate-400">Time Elapsed</p>
+                <p id="sessionTime" class="text-base sm:text-lg font-display font-medium text-slate-200 tabular-nums">00:00</p>
+            </div>
+        </div>
+
+        <!-- Playback & Session Actions -->
+        <div class="flex items-center gap-2.5 w-full max-w-sm mb-2">
+            <button id="togglePlayBtn" class="flex-1 py-3 px-5 rounded-2xl font-semibold text-sm sm:text-base flex items-center justify-center gap-2 bg-gradient-to-r from-teal-400 to-cyan-500 hover:from-teal-300 hover:to-cyan-400 text-slate-950 shadow-[0_4px_24px_rgba(20,184,166,0.3)] transition transform active:scale-95">
+                <svg id="playIcon" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+                <svg id="pauseIcon" class="w-5 h-5 fill-current hidden" viewBox="0 0 24 24">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                </svg>
+                <span id="playButtonLabel">Start Session</span>
+            </button>
+
+            <button id="logCurrentSessionBtn" title="Complete & Save to Daily Log" class="py-3 px-3.5 rounded-2xl bg-teal-500/10 hover:bg-teal-500/20 border border-teal-400/30 text-teal-300 hover:text-white transition flex items-center gap-1.5 text-xs font-medium active:scale-95 disabled:opacity-40 disabled:pointer-events-none" disabled>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Save</span>
+            </button>
+
+            <button id="resetBtn" title="Reset Session" class="p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition active:scale-95">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+            </button>
+        </div>
+
+        <button id="quickSoundscapeBadge" class="py-1 px-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-[11px] text-slate-400 hover:text-teal-300 transition flex items-center gap-1.5 active:scale-95">
+            <svg class="w-3.5 h-3.5 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+            </svg>
+            <span id="activeSoundscapeName">Ambience: Off</span>
+            <span class="text-slate-500">• Audio Studio</span>
+        </button>
+
+    </main>
+
+    <!-- Footer Technique Selector -->
+    <footer class="relative z-20 w-full max-w-md mx-auto px-4 pb-4 sm:pb-5">
+        <div class="bg-slate-900/80 border border-white/10 rounded-2xl p-2.5 backdrop-blur-xl">
+            <div class="flex items-center justify-between px-2 mb-2 text-xs text-slate-400 font-medium">
+                <span>Select Breathing Rhythm</span>
+                <span id="patternTimingLabel" class="text-teal-300 font-mono">4-4-4-4</span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-1.5" role="tablist">
+                <button data-pattern="box" class="pattern-btn active-pattern flex flex-col items-center py-2 px-1 rounded-xl text-center border transition bg-teal-500/20 border-teal-400/50 text-white">
+                    <span class="text-xs font-semibold">Box Focus</span>
+                    <span class="text-[10px] text-teal-200/70">4 • 4 • 4 • 4</span>
+                </button>
+
+                <button data-pattern="relax" class="pattern-btn flex flex-col items-center py-2 px-1 rounded-xl text-center border transition bg-white/[0.02] border-white/5 hover:bg-white/[0.06] text-slate-300">
+                    <span class="text-xs font-semibold">4-7-8 Sleep</span>
+                    <span class="text-[10px] text-slate-400">4 • 7 • 8</span>
+                </button>
+
+                <button data-pattern="calm" class="pattern-btn flex flex-col items-center py-2 px-1 rounded-xl text-center border transition bg-white/[0.02] border-white/5 hover:bg-white/[0.06] text-slate-300">
+                    <span class="text-xs font-semibold">Coherent</span>
+                    <span class="text-[10px] text-slate-400">5.5 • 5.5</span>
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Sound & Music Studio Modal -->
+    <div id="soundModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-slate-900/95 border border-white/15 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 shadow-2xl relative text-left max-h-[85vh] flex flex-col">
+            
+            <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-teal-500/20 border border-teal-500/30 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-display font-semibold text-white">Audio & Music Suite</h3>
+                        <p class="text-[11px] text-slate-400">Pure Web Audio ambient soundscapes & meditative chimes</p>
+                    </div>
+                </div>
+                <button id="closeSoundModalBtn" class="text-slate-400 hover:text-white p-1 rounded-full">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
+                <!-- Ambient Soundscape Generator -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-medium text-slate-200">Continuous Ambient Soundscape</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-slate-400">Volume</span>
+                            <input id="ambientVolSlider" type="range" min="0" max="1" step="0.05" value="0.5" class="w-20 accent-teal-400 cursor-pointer h-1.5 bg-white/10 rounded-lg">
+                            <span id="ambientVolLabel" class="text-[10px] text-teal-300 font-mono min-w-[28px]">50%</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <button data-ambient="off" class="ambient-card active-card p-2.5 rounded-2xl bg-teal-500/20 border border-teal-400/50 text-left transition flex items-center gap-2.5">
+                            <span class="text-base">🔇</span>
+                            <div>
+                                <h5 class="text-xs font-semibold text-white">Off</h5>
+                                <p class="text-[10px] text-slate-400">Silent ambience</p>
+                            </div>
+                        </button>
+                        <button data-ambient="drone" class="ambient-card p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.07] text-left transition flex items-center gap-2.5">
+                            <span class="text-base">🕉️</span>
+                            <div>
+                                <h5 class="text-xs font-semibold text-white">Zen 432Hz Om</h5>
+                                <p class="text-[10px] text-slate-400">Harmonic drone</p>
+                            </div>
+                        </button>
+                        <button data-ambient="ocean" class="ambient-card p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.07] text-left transition flex items-center gap-2.5">
+                            <span class="text-base">🌊</span>
+                            <div>
+                                <h5 class="text-xs font-semibold text-white">Ocean Waves</h5>
+                                <p class="text-[10px] text-slate-400">Tidal swell</p>
+                            </div>
+                        </button>
+                        <button data-ambient="rain" class="ambient-card p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.07] text-left transition flex items-center gap-2.5">
+                            <span class="text-base">🌧️</span>
+                            <div>
+                                <h5 class="text-xs font-semibold text-white">Gentle Rain</h5>
+                                <p class="text-[10px] text-slate-400">Calming drizzle</p>
+                            </div>
+                        </button>
+                        <button data-ambient="binaural" class="ambient-card p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.07] text-left transition flex items-center gap-2.5">
+                            <span class="text-base">🎧</span>
+                            <div>
+                                <h5 class="text-xs font-semibold text-white">Alpha 10Hz</h5>
+                                <p class="text-[10px] text-slate-400">Binaural focus</p>
+                            </div>
+                        </button>
+                        <button data-ambient="forest" class="ambient-card p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.07] text-left transition flex items-center gap-2.5">
+                            <span class="text-base">🍃</span>
+                            <div>
+                                <h5 class="text-xs font-semibold text-white">Forest Breeze</h5>
+                                <p class="text-[10px] text-slate-400">Soft winds</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Breath Transition Chimes -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-medium text-slate-200">Breath Transition Chime</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-slate-400">Volume</span>
+                            <input id="chimeVolSlider" type="range" min="0" max="1" step="0.05" value="0.7" class="w-20 accent-teal-400 cursor-pointer h-1.5 bg-white/10 rounded-lg">
+                            <span id="chimeVolLabel" class="text-[10px] text-teal-300 font-mono min-w-[28px]">70%</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button data-chime="bowl" class="chime-card active-card py-2 px-1 rounded-xl bg-teal-500/20 border border-teal-400/50 text-center transition flex flex-col items-center">
+                            <span class="text-base mb-1">🥣</span>
+                            <span class="text-xs font-semibold text-white">Bowl</span>
+                        </button>
+                        <button data-chime="bell" class="chime-card py-2 px-1 rounded-xl bg-white/[0.03] border border-white/10 text-center transition flex flex-col items-center">
+                            <span class="text-base mb-1">🔔</span>
+                            <span class="text-xs font-semibold text-white">Bell</span>
+                        </button>
+                        <button data-chime="wood" class="chime-card py-2 px-1 rounded-xl bg-white/[0.03] border border-white/10 text-center transition flex flex-col items-center">
+                            <span class="text-base mb-1">🪵</span>
+                            <span class="text-xs font-semibold text-white">Wood</span>
+                        </button>
+                        <button data-chime="none" class="chime-card py-2 px-1 rounded-xl bg-white/[0.03] border border-white/10 text-center transition flex flex-col items-center">
+                            <span class="text-base mb-1">🚫</span>
+                            <span class="text-xs font-semibold text-white">None</span>
+                        </button>
+                    </div>
+                    <div class="mt-2 flex justify-end">
+                        <button id="previewChimeBtn" class="text-[11px] text-teal-400 hover:text-teal-300 flex items-center gap-1 py-1 px-2.5 rounded-lg bg-teal-500/10 border border-teal-500/20 active:scale-95 transition">
+                            <span>▶ Test chime sound</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-white/10 flex justify-end mt-2">
+                <button id="closeSoundModalBtn2" class="py-2 px-5 rounded-xl bg-teal-400/20 hover:bg-teal-400/30 text-teal-300 font-medium text-xs border border-teal-400/30 transition active:scale-95">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technique Guide Modal -->
+    <div id="infoModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-slate-900 border border-white/15 max-w-sm w-full rounded-3xl p-6 shadow-2xl relative text-left">
+            <button id="closeInfoBtn" class="absolute top-4 right-4 text-slate-400 hover:text-white p-1 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <h3 class="text-lg font-display font-semibold text-white mb-2">Breathing Techniques</h3>
+            
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed max-h-[60vh] overflow-y-auto pr-1">
+                <div class="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                    <h4 class="font-semibold text-teal-300 mb-0.5">Box Breathing (4-4-4-4)</h4>
+                    <p class="text-slate-300">Regulates the autonomic nervous system, sharpens mental focus, and calms adrenaline surges.</p>
+                </div>
+                <div class="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                    <h4 class="font-semibold text-indigo-300 mb-0.5">4-7-8 Relaxing Breath</h4>
+                    <p class="text-slate-300">Stimulates parasympathetic vagus nerve response, lowering pulse rate and easing sleep onset.</p>
+                </div>
+                <div class="p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                    <h4 class="font-semibold text-sky-300 mb-0.5">Coherent / Resonance (5.5 - 5.5)</h4>
+                    <p class="text-slate-300">Optimizes Heart Rate Variability (HRV), harmonizing cardiac and respiratory oscillations.</p>
+                </div>
+            </div>
+
+            <button id="modalGotItBtn" class="mt-5 w-full py-2.5 rounded-xl bg-teal-400/20 hover:bg-teal-400/30 text-teal-300 font-medium text-xs border border-teal-400/30 transition active:scale-95">
+                Got It
+            </button>
+        </div>
+    </div>
+
+    <!-- Day-Wise Session Log Modal Sheet -->
+    <div id="logModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-slate-900/95 border border-white/15 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 shadow-2xl relative text-left max-h-[85vh] flex flex-col">
+            
+            <div class="flex items-center justify-between pb-3 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-teal-500/20 border border-teal-500/30 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-base sm:text-lg font-display font-semibold text-white">Day-Wise Breath Log</h3>
+                            <div class="flex items-center gap-1 bg-white/5 border border-white/10 px-2 py-0.5 rounded-full">
+                                <span id="cloudStatusDot" class="w-2 h-2 rounded-full bg-slate-500 shrink-0"></span>
+                                <span id="cloudStatusText" class="text-[10px] text-slate-400">Local Offline Storage</span>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Daily mindfulness activity and history</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button id="exportLogBtn" title="Copy log summary" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition text-xs flex items-center gap-1 border border-white/5 active:scale-95">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="text-[11px] hidden sm:inline">Copy</span>
+                    </button>
+                    <button id="closeLogBtn" class="text-slate-400 hover:text-white p-1 rounded-full">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Statistics Cards -->
+            <div class="grid grid-cols-3 gap-2 py-3">
+                <div class="p-2.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-center">
+                    <span class="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block">Today's Time</span>
+                    <span id="todayTimeMetric" class="text-base sm:text-lg font-display font-semibold text-teal-300">0m 0s</span>
+                </div>
+                <div class="p-2.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-center">
+                    <span class="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block">Today's Cycles</span>
+                    <span id="todayCyclesMetric" class="text-base sm:text-lg font-display font-semibold text-cyan-300">0</span>
+                </div>
+                <div class="p-2.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-center">
+                    <span class="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block">Day Streak</span>
+                    <span id="dayStreakMetric" class="text-base sm:text-lg font-display font-semibold text-amber-300">0 Days</span>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto pr-1 space-y-3.5 my-1 text-xs" id="dayLogListContainer"></div>
+
+            <div class="pt-3 border-t border-white/10 flex flex-col gap-2">
+                <div class="flex items-center justify-between text-xs text-slate-400">
+                    <button id="clearLogBtn" class="text-rose-400/80 hover:text-rose-300 transition text-[11px] underline">
+                        Clear Log History
+                    </button>
+                    <button id="sampleDataBtn" class="text-teal-400/80 hover:text-teal-300 transition text-[11px]">
+                        + Load Demo Days
+                    </button>
+                </div>
+                <div id="fullUserIdWrap" class="hidden text-[10px] text-slate-500 font-mono flex items-center justify-between bg-white/[0.02] p-1.5 rounded-lg border border-white/5">
+                    <span class="truncate">UID: <span id="fullUserIdText" class="text-slate-400"></span></span>
+                    <button id="copyUserIdBtn" class="text-teal-400 hover:text-teal-300 underline shrink-0">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mood Check-In Modal Dialog -->
+    <div id="savePromptModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-slate-900 border border-teal-500/30 max-w-sm w-full rounded-3xl p-5 shadow-2xl relative text-left">
+            <h3 class="text-base font-display font-semibold text-white mb-1">Log This Breathing Session</h3>
+            <p id="savePromptSummary" class="text-xs text-teal-300 mb-3.5">Box Focus • 4 cycles • 01:20</p>
+
+            <label class="text-[11px] font-medium text-slate-400 mb-1.5 block">How are you feeling right now?</label>
+            <div class="grid grid-cols-4 gap-1.5 mb-4" id="moodSelector">
+                <button data-mood="😌 Calm" class="mood-btn active-mood py-2 px-1 rounded-xl bg-teal-500/20 border border-teal-400/50 text-[11px] text-white flex flex-col items-center">
+                    <span class="text-base mb-0.5">😌</span>
+                    <span>Calm</span>
+                </button>
+                <button data-mood="🌿 Grounded" class="mood-btn py-2 px-1 rounded-xl bg-white/5 border border-white/10 text-[11px] text-slate-300 hover:bg-white/10 flex flex-col items-center">
+                    <span class="text-base mb-0.5">🌿</span>
+                    <span>Grounded</span>
+                </button>
+                <button data-mood="⚡ Focused" class="mood-btn py-2 px-1 rounded-xl bg-white/5 border border-white/10 text-[11px] text-slate-300 hover:bg-white/10 flex flex-col items-center">
+                    <span class="text-base mb-0.5">⚡</span>
+                    <span>Focused</span>
+                </button>
+                <button data-mood="🌙 Relaxed" class="mood-btn py-2 px-1 rounded-xl bg-white/5 border border-white/10 text-[11px] text-slate-300 hover:bg-white/10 flex flex-col items-center">
+                    <span class="text-base mb-0.5">🌙</span>
+                    <span>Relaxed</span>
+                </button>
+            </div>
+
+            <div class="flex gap-2">
+                <button id="cancelSaveBtn" class="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-medium text-xs border border-white/10 transition active:scale-95">
+                    Discard
+                </button>
+                <button id="confirmSaveBtn" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-teal-400 to-cyan-500 text-slate-950 font-semibold text-xs shadow-md transition active:scale-95">
+                    Save to Day Log
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modular Import and Application Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            signInWithCustomToken, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            collection, 
+            addDoc, 
+            deleteDoc, 
+            onSnapshot, 
+            getDocs 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        /**
+         * Comprehensive Pure Web Audio API Sound and Ambient Music Generator.
+         * Synthesizes resonant singing bowls, crystal bells, woodblocks,
+         * and continuous ambient soundscapes without external audio files.
+         */
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+                this.chimeType = 'bowl';
+                this.chimeVolume = 0.7;
+                this.ambientType = 'off';
+                this.ambientVolume = 0.5;
+
+                this.ambientMasterGain = null;
+                this.ambientNodes = [];
+                this.noiseBuffer = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                    this.ambientMasterGain = this.ctx.createGain();
+                    this.ambientMasterGain.gain.setValueAtTime(this.ambientVolume, this.ctx.currentTime);
+                    this.ambientMasterGain.connect(this.ctx.destination);
+                    this.createNoiseBuffer();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            createNoiseBuffer() {
+                if (!this.ctx) return;
+                const bufferSize = this.ctx.sampleRate * 5;
+                this.noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = this.noiseBuffer.getChannelData(0);
+                let lastOut = 0.0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    data[i] = (lastOut + (0.02 * white)) / 1.02;
+                    lastOut = data[i];
+                    data[i] *= 3.5;
+                }
+            }
+
+            playPhaseTone(phase) {
+                if (!this.enabled || this.chimeType === 'none') return;
+                this.init();
+
+                if (this.chimeType === 'bowl') {
+                    if (phase === 'Inhale') this.playBowl(392.0, 2.8, 0.16 * this.chimeVolume);
+                    else if (phase === 'Hold') this.playBowl(440.0, 2.0, 0.10 * this.chimeVolume);
+                    else if (phase === 'Exhale') this.playBowl(329.63, 3.4, 0.18 * this.chimeVolume);
+                } else if (this.chimeType === 'bell') {
+                    if (phase === 'Inhale') this.playCrystalBell(880, 2.4, 0.18 * this.chimeVolume);
+                    else if (phase === 'Hold') this.playCrystalBell(1046.5, 1.8, 0.12 * this.chimeVolume);
+                    else if (phase === 'Exhale') this.playCrystalBell(659.25, 2.8, 0.20 * this.chimeVolume);
+                } else if (this.chimeType === 'wood') {
+                    if (phase === 'Inhale') this.playWoodBlock(600, 0.15 * this.chimeVolume);
+                    else if (phase === 'Hold') this.playWoodBlock(750, 0.10 * this.chimeVolume);
+                    else if (phase === 'Exhale') this.playWoodBlock(480, 0.16 * this.chimeVolume);
+                }
+            }
+
+            playBowl(frequency = 392, duration = 2.8, gainLevel = 0.15) {
+                try {
+                    const now = this.ctx.currentTime;
+                    const osc1 = this.ctx.createOscillator();
+                    const osc2 = this.ctx.createOscillator();
+                    const gain1 = this.ctx.createGain();
+                    const gain2 = this.ctx.createGain();
+
+                    osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(frequency, now);
+
+                    osc2.type = 'sine';
+                    osc2.frequency.setValueAtTime(frequency * 2.76, now);
+
+                    gain1.gain.setValueAtTime(0.0001, now);
+                    gain1.gain.linearRampToValueAtTime(gainLevel, now + 0.08);
+                    gain1.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+                    gain2.gain.setValueAtTime(0.0001, now);
+                    gain2.gain.linearRampToValueAtTime(gainLevel * 0.3, now + 0.05);
+                    gain2.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.7);
+
+                    osc1.connect(gain1);
+                    osc2.connect(gain2);
+                    gain1.connect(this.ctx.destination);
+                    gain2.connect(this.ctx.destination);
+
+                    osc1.start(now);
+                    osc2.start(now);
+                    osc1.stop(now + duration);
+                    osc2.stop(now + duration);
+                } catch(e) {}
+            }
+
+            playCrystalBell(frequency = 880, duration = 2.4, gainLevel = 0.18) {
+                try {
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const oscHarmonic = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(frequency, now);
+                    oscHarmonic.type = 'triangle';
+                    oscHarmonic.frequency.setValueAtTime(frequency * 3.01, now);
+
+                    gain.gain.setValueAtTime(0.0001, now);
+                    gain.gain.linearRampToValueAtTime(gainLevel, now + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+                    osc.connect(gain);
+                    oscHarmonic.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start(now);
+                    oscHarmonic.start(now);
+                    osc.stop(now + duration);
+                    oscHarmonic.stop(now + duration);
+                } catch(e) {}
+            }
+
+            playWoodBlock(frequency = 580, gainLevel = 0.15) {
+                try {
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(frequency, now);
+                    osc.frequency.exponentialRampToValueAtTime(frequency * 0.45, now + 0.12);
+
+                    gain.gain.setValueAtTime(gainLevel, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                } catch(e) {}
+            }
+
+            stopAmbient() {
+                if (this.ambientNodes.length > 0) {
+                    const now = this.ctx ? this.ctx.currentTime : 0;
+                    this.ambientNodes.forEach(node => {
+                        try {
+                            if (node.stop) node.stop(now + 0.2);
+                            if (node.disconnect) {
+                                setTimeout(() => {
+                                    try { node.disconnect(); } catch(err) {}
+                                }, 250);
+                            }
+                        } catch(e) {}
+                    });
+                    this.ambientNodes = [];
+                }
+            }
+
+            setAmbientVolume(val) {
+                this.ambientVolume = Math.max(0, Math.min(1, val));
+                if (this.ambientMasterGain && this.ctx) {
+                    this.ambientMasterGain.gain.setTargetAtTime(this.enabled ? this.ambientVolume : 0, this.ctx.currentTime, 0.05);
+                }
+            }
+
+            setChimeVolume(val) {
+                this.chimeVolume = Math.max(0, Math.min(1, val));
+            }
+
+            startAmbient(type) {
+                this.init();
+                this.stopAmbient();
+                this.ambientType = type;
+
+                if (!this.enabled || type === 'off' || !this.ctx) return;
+
+                const now = this.ctx.currentTime;
+
+                if (type === 'drone') {
+                    const freqs = [108, 216, 432, 648];
+                    const detunes = [-4, 3, -2, 5];
+
+                    freqs.forEach((f, idx) => {
+                        const osc = this.ctx.createOscillator();
+                        const g = this.ctx.createGain();
+                        const filter = this.ctx.createBiquadFilter();
+
+                        osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+                        osc.frequency.setValueAtTime(f, now);
+                        osc.detune.setValueAtTime(detunes[idx], now);
+
+                        filter.type = 'lowpass';
+                        filter.frequency.setValueAtTime(850, now);
+
+                        const lfo = this.ctx.createOscillator();
+                        lfo.frequency.setValueAtTime(0.08 + (idx * 0.02), now);
+                        lfo.connect(g.gain);
+
+                        const baseGain = (idx === 0 ? 0.08 : 0.05);
+                        g.gain.setValueAtTime(0.001, now);
+                        g.gain.linearRampToValueAtTime(baseGain, now + 2.0);
+
+                        osc.connect(filter);
+                        filter.connect(g);
+                        g.connect(this.ambientMasterGain);
+
+                        osc.start(now);
+                        lfo.start(now);
+                        this.ambientNodes.push(osc, g, filter, lfo);
+                    });
+
+                } else if (type === 'ocean') {
+                    if (!this.noiseBuffer) this.createNoiseBuffer();
+
+                    const src = this.ctx.createBufferSource();
+                    src.buffer = this.noiseBuffer;
+                    src.loop = true;
+
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(320, now);
+                    filter.Q.setValueAtTime(2.5, now);
+
+                    const lfo = this.ctx.createOscillator();
+                    lfo.frequency.setValueAtTime(0.09, now);
+                    const lfoGain = this.ctx.createGain();
+                    lfoGain.gain.setValueAtTime(280, now);
+                    lfo.connect(filter.frequency);
+
+                    const waveGain = this.ctx.createGain();
+                    waveGain.gain.setValueAtTime(0.001, now);
+                    waveGain.gain.linearRampToValueAtTime(0.18, now + 2.0);
+
+                    src.connect(filter);
+                    filter.connect(waveGain);
+                    waveGain.connect(this.ambientMasterGain);
+
+                    src.start(now);
+                    lfo.start(now);
+                    this.ambientNodes.push(src, filter, lfo, lfoGain, waveGain);
+
+                } else if (type === 'rain') {
+                    if (!this.noiseBuffer) this.createNoiseBuffer();
+
+                    const src = this.ctx.createBufferSource();
+                    src.buffer = this.noiseBuffer;
+                    src.loop = true;
+
+                    const bandpass = this.ctx.createBiquadFilter();
+                    bandpass.type = 'bandpass';
+                    bandpass.frequency.setValueAtTime(1400, now);
+                    bandpass.Q.setValueAtTime(0.8, now);
+
+                    const rainGain = this.ctx.createGain();
+                    rainGain.gain.setValueAtTime(0.001, now);
+                    rainGain.gain.linearRampToValueAtTime(0.12, now + 1.5);
+
+                    src.connect(bandpass);
+                    bandpass.connect(rainGain);
+                    rainGain.connect(this.ambientMasterGain);
+
+                    src.start(now);
+                    this.ambientNodes.push(src, bandpass, rainGain);
+
+                } else if (type === 'binaural') {
+                    const oscL = this.ctx.createOscillator();
+                    const oscR = this.ctx.createOscillator();
+                    const merger = this.ctx.createChannelMerger(2);
+
+                    oscL.type = 'sine';
+                    oscL.frequency.setValueAtTime(216, now);
+
+                    oscR.type = 'sine';
+                    oscR.frequency.setValueAtTime(226, now);
+
+                    const gainL = this.ctx.createGain();
+                    const gainR = this.ctx.createGain();
+                    gainL.gain.setValueAtTime(0.07, now);
+                    gainR.gain.setValueAtTime(0.07, now);
+
+                    oscL.connect(gainL);
+                    oscR.connect(gainR);
+                    gainL.connect(merger, 0, 0);
+                    gainR.connect(merger, 0, 1);
+
+                    merger.connect(this.ambientMasterGain);
+
+                    oscL.start(now);
+                    oscR.start(now);
+                    this.ambientNodes.push(oscL, oscR, gainL, gainR, merger);
+
+                } else if (type === 'forest') {
+                    if (!this.noiseBuffer) this.createNoiseBuffer();
+
+                    const src = this.ctx.createBufferSource();
+                    src.buffer = this.noiseBuffer;
+                    src.loop = true;
+
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(260, now);
+
+                    const lfo = this.ctx.createOscillator();
+                    lfo.frequency.setValueAtTime(0.14, now);
+                    const lfoGain = this.ctx.createGain();
+                    lfoGain.gain.setValueAtTime(140, now);
+                    lfo.connect(filter.frequency);
+
+                    const windGain = this.ctx.createGain();
+                    windGain.gain.setValueAtTime(0.001, now);
+                    windGain.gain.linearRampToValueAtTime(0.14, now + 1.5);
+
+                    src.connect(filter);
+                    filter.connect(windGain);
+                    windGain.connect(this.ambientMasterGain);
+
+                    src.start(now);
+                    lfo.start(now);
+                    this.ambientNodes.push(src, filter, lfo, lfoGain, windGain);
+                }
+            }
+        }
+
+        const PATTERNS = {
+            box: {
+                id: 'box',
+                name: 'Box Breathing',
+                label: '4 • 4 • 4 • 4',
+                color: '#2dd4bf',
+                glowClass: 'bg-teal-500',
+                steps: [
+                    { phase: 'Inhale', duration: 4, tip: 'Expand your diaphragm', scale: 1.22, lungScaleX: 1.18, lungScaleY: 1.15, diaphragmY: 14 },
+                    { phase: 'Hold', duration: 4, tip: 'Keep lungs gently full', scale: 1.22, lungScaleX: 1.18, lungScaleY: 1.15, diaphragmY: 14 },
+                    { phase: 'Exhale', duration: 4, tip: 'Slowly empty air', scale: 0.78, lungScaleX: 0.88, lungScaleY: 0.88, diaphragmY: 0 },
+                    { phase: 'Hold', duration: 4, tip: 'Rest in quiet stillness', scale: 0.78, lungScaleX: 0.88, lungScaleY: 0.88, diaphragmY: 0 }
+                ]
+            },
+            relax: {
+                id: 'relax',
+                name: '4-7-8 Sleep',
+                label: '4 • 7 • 8',
+                color: '#818cf8',
+                glowClass: 'bg-indigo-500',
+                steps: [
+                    { phase: 'Inhale', duration: 4, tip: 'Inhale quietly via nose', scale: 1.25, lungScaleX: 1.20, lungScaleY: 1.16, diaphragmY: 16 },
+                    { phase: 'Hold', duration: 7, tip: 'Hold breath peacefully', scale: 1.25, lungScaleX: 1.20, lungScaleY: 1.16, diaphragmY: 16 },
+                    { phase: 'Exhale', duration: 8, tip: 'Slow gentle whoosh out', scale: 0.75, lungScaleX: 0.86, lungScaleY: 0.86, diaphragmY: 0 }
+                ]
+            },
+            calm: {
+                id: 'calm',
+                name: 'Coherent Resonance',
+                label: '5.5 • 5.5',
+                color: '#38bdf8',
+                glowClass: 'bg-sky-500',
+                steps: [
+                    { phase: 'Inhale', duration: 5.5, tip: 'Smooth continuous intake', scale: 1.22, lungScaleX: 1.18, lungScaleY: 1.14, diaphragmY: 15 },
+                    { phase: 'Exhale', duration: 5.5, tip: 'Smooth continuous release', scale: 0.78, lungScaleX: 0.88, lungScaleY: 0.88, diaphragmY: 0 }
+                ]
+            }
+        };
+
+        const PHASE_THEMES = {
+            'Inhale': {
+                gradientText: 'from-emerald-300 via-teal-200 to-cyan-300',
+                textGlow: 'drop-shadow-[0_0_24px_rgba(45,212,191,0.65)]',
+                badgeBg: 'bg-teal-500/25 border-teal-400/50 text-teal-200 shadow-[0_0_12px_rgba(45,212,191,0.3)]',
+                badgeLabel: 'EXPANDING',
+                badgeIcon: '↑',
+                ringStroke: '#2dd4bf',
+                backdropGlow: 'bg-teal-500 opacity-50',
+                subtextClass: 'text-teal-200/90',
+                lungStop1: '#2dd4bf',
+                lungStop2: '#0f766e',
+                lungStroke: '#5eead4',
+                streamClass: 'flow-inhale'
+            },
+            'Hold': {
+                gradientText: 'from-amber-200 via-amber-300 to-yellow-400',
+                textGlow: 'drop-shadow-[0_0_24px_rgba(251,191,36,0.6)]',
+                badgeBg: 'bg-amber-500/25 border-amber-400/50 text-amber-200 shadow-[0_0_12px_rgba(251,191,36,0.3)]',
+                badgeLabel: 'STILLNESS',
+                badgeIcon: '⏸',
+                ringStroke: '#fbbf24',
+                backdropGlow: 'bg-amber-500 opacity-45',
+                subtextClass: 'text-amber-200/90',
+                lungStop1: '#fbbf24',
+                lungStop2: '#b45309',
+                lungStroke: '#fde68a',
+                streamClass: 'flow-still'
+            },
+            'Exhale': {
+                gradientText: 'from-rose-300 via-pink-200 to-purple-300',
+                textGlow: 'drop-shadow-[0_0_24px_rgba(244,63,94,0.65)]',
+                badgeBg: 'bg-rose-500/25 border-rose-400/50 text-rose-200 shadow-[0_0_12px_rgba(244,63,94,0.3)]',
+                badgeLabel: 'RELEASING',
+                badgeIcon: '↓',
+                ringStroke: '#f43f5e',
+                backdropGlow: 'bg-rose-500 opacity-50',
+                subtextClass: 'text-rose-200/90',
+                lungStop1: '#f43f5e',
+                lungStop2: '#9f1239',
+                lungStroke: '#fda4af',
+                streamClass: 'flow-exhale'
+            }
+        };
+
+        const soundEngine = new SoundEngine();
+        let currentPatternKey = 'box';
+        let isRunning = false;
+        let isLungView = true;
+        let currentStepIndex = 0;
+        let stepProgressTime = 0;
+        let totalElapsedSeconds = 0;
+        let completedCycles = 0;
+        let lastTimestamp = null;
+        let animFrameId = null;
+        let sessionTimerInterval = null;
+
+        const RING_CIRCUMFERENCE = 2 * Math.PI * 112;
+
+        const progressRing = document.getElementById('progressRing');
+        const ringHeadBead = document.getElementById('ringHeadBead');
+        const ringHeadGlow = document.getElementById('ringHeadGlow');
+        const orbVisualizer = document.getElementById('orbVisualizer');
+        const orbContainer = document.getElementById('orbContainer');
+        const orbLiquidFill = document.getElementById('orbLiquidFill');
+        const orbLiquidSurface = document.getElementById('orbLiquidSurface');
+        const orbInnerGlow = document.getElementById('orbInnerGlow');
+        const orbAirPercent = document.getElementById('orbAirPercent');
+
+        const lungsVisualizer = document.getElementById('lungsVisualizer');
+        const rightLungLobe = document.getElementById('rightLungLobe');
+        const leftLungLobe = document.getElementById('leftLungLobe');
+        const rightLungPath = document.getElementById('rightLungPath');
+        const leftLungPath = document.getElementById('leftLungPath');
+        const rGradStop1 = document.getElementById('rGradStop1');
+        const rGradStop2 = document.getElementById('rGradStop2');
+        const lGradStop1 = document.getElementById('lGradStop1');
+        const lGradStop2 = document.getElementById('lGradStop2');
+        const oxygenStreams = document.getElementById('oxygenStreams');
+        const diaphragmMuscle = document.getElementById('diaphragmMuscle');
+
+        const viewToggleBtn = document.getElementById('viewToggleBtn');
+        const viewModeIcon = document.getElementById('viewModeIcon');
+        const viewModeText = document.getElementById('viewModeText');
+
+        const rippleContainer = document.getElementById('rippleContainer');
+        const phaseHud = document.getElementById('phaseHud');
+        const phaseText = document.getElementById('phaseText');
+        const phaseBadge = document.getElementById('phaseBadge');
+        const phaseBadgeLabel = document.getElementById('phaseBadgeLabel');
+        const phaseBadgeIcon = document.getElementById('phaseBadgeIcon');
+        const instructionText = document.getElementById('instructionText');
+        const countdownNumber = document.getElementById('countdownNumber');
+        const breathTip = document.getElementById('breathTip');
+        const cycleCountEl = document.getElementById('cycleCount');
+        const sessionTimeEl = document.getElementById('sessionTime');
+        const ambientBackdrop = document.getElementById('ambientBackdrop');
+        const patternTimingLabel = document.getElementById('patternTimingLabel');
+
+        const togglePlayBtn = document.getElementById('togglePlayBtn');
+        const playIcon = document.getElementById('playIcon');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const playButtonLabel = document.getElementById('playButtonLabel');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const soundToggleBtn = document.getElementById('soundToggleBtn');
+        const soundIconOn = document.getElementById('soundIconOn');
+        const soundIconOff = document.getElementById('soundIconOff');
+        const soundModalBtn = document.getElementById('soundModalBtn');
+        const soundModal = document.getElementById('soundModal');
+        const closeSoundModalBtn = document.getElementById('closeSoundModalBtn');
+        const closeSoundModalBtn2 = document.getElementById('closeSoundModalBtn2');
+        const quickSoundscapeBadge = document.getElementById('quickSoundscapeBadge');
+        const activeSoundscapeName = document.getElementById('activeSoundscapeName');
+        const musicActivePing = document.getElementById('musicActivePing');
+        const musicActiveDot = document.getElementById('musicActiveDot');
+
+        const ambientCards = document.querySelectorAll('.ambient-card');
+        const chimeCards = document.querySelectorAll('.chime-card');
+        const ambientVolSlider = document.getElementById('ambientVolSlider');
+        const ambientVolLabel = document.getElementById('ambientVolLabel');
+        const chimeVolSlider = document.getElementById('chimeVolSlider');
+        const chimeVolLabel = document.getElementById('chimeVolLabel');
+        const previewChimeBtn = document.getElementById('previewChimeBtn');
+
+        const infoBtn = document.getElementById('infoBtn');
+        const infoModal = document.getElementById('infoModal');
+        const closeInfoBtn = document.getElementById('closeInfoBtn');
+        const modalGotItBtn = document.getElementById('modalGotItBtn');
+        const patternButtons = document.querySelectorAll('.pattern-btn');
+
+        const logBtn = document.getElementById('logBtn');
+        const logModal = document.getElementById('logModal');
+        const closeLogBtn = document.getElementById('closeLogBtn');
+        const logCountBadge = document.getElementById('logCountBadge');
+        const dayLogListContainer = document.getElementById('dayLogListContainer');
+        const logCurrentSessionBtn = document.getElementById('logCurrentSessionBtn');
+        const exportLogBtn = document.getElementById('exportLogBtn');
+        const clearLogBtn = document.getElementById('clearLogBtn');
+        const sampleDataBtn = document.getElementById('sampleDataBtn');
+        const todayTimeMetric = document.getElementById('todayTimeMetric');
+        const todayCyclesMetric = document.getElementById('todayCyclesMetric');
+        const dayStreakMetric = document.getElementById('dayStreakMetric');
+
+        const savePromptModal = document.getElementById('savePromptModal');
+        const savePromptSummary = document.getElementById('savePromptSummary');
+        const moodButtons = document.querySelectorAll('.mood-btn');
+        const cancelSaveBtn = document.getElementById('cancelSaveBtn');
+        const confirmSaveBtn = document.getElementById('confirmSaveBtn');
+        let selectedMood = '😌 Calm';
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        let auth = null;
+        let db = null;
+        let currentUser = null;
+        let isCloudSyncActive = false;
+
+        const LOGS_STORAGE_KEY = 'serene_day_wide_logs_v1';
+        let inMemoryFallbackLogs = [];
+
+        const headerCloudDot = document.getElementById('headerCloudDot');
+        const cloudStatusDot = document.getElementById('cloudStatusDot');
+        const cloudStatusText = document.getElementById('cloudStatusText');
+        const fullUserIdWrap = document.getElementById('fullUserIdWrap');
+        const fullUserIdText = document.getElementById('fullUserIdText');
+        const copyUserIdBtn = document.getElementById('copyUserIdBtn');
+
+        function updateCloudUI(connected, uid) {
+            if (connected && uid) {
+                if (headerCloudDot) headerCloudDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 absolute top-1 right-1";
+                if (cloudStatusDot) cloudStatusDot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0";
+                if (cloudStatusText) cloudStatusText.textContent = "Cloud Firestore Synced";
+                if (fullUserIdWrap) fullUserIdWrap.classList.remove('hidden');
+                if (fullUserIdText) fullUserIdText.textContent = uid;
+                if (copyUserIdBtn) copyUserIdBtn.classList.remove('hidden');
+            } else {
+                if (headerCloudDot) headerCloudDot.className = "w-1.5 h-1.5 rounded-full bg-slate-500 absolute top-1 right-1";
+                if (cloudStatusDot) cloudStatusDot.className = "w-2 h-2 rounded-full bg-slate-500 shrink-0";
+                if (cloudStatusText) cloudStatusText.textContent = "Local Offline Storage";
+                if (fullUserIdWrap) fullUserIdWrap.classList.add('hidden');
+                if (copyUserIdBtn) copyUserIdBtn.classList.add('hidden');
+            }
+        }
+
+        if (copyUserIdBtn) {
+            copyUserIdBtn.addEventListener('click', () => {
+                if (!fullUserIdText || !fullUserIdText.textContent) return;
+                const tempEl = document.createElement('textarea');
+                tempEl.value = fullUserIdText.textContent;
+                tempEl.style.position = 'fixed';
+                tempEl.style.opacity = '0';
+                document.body.appendChild(tempEl);
+                tempEl.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempEl);
+
+                const orig = copyUserIdBtn.textContent;
+                copyUserIdBtn.textContent = 'Copied!';
+                setTimeout(() => { copyUserIdBtn.textContent = orig; }, 1500);
+            });
+        }
+
+        async function setupCloudPersistence() {
+            let firebaseConfig = null;
+            try {
+                if (typeof __firebase_config !== 'undefined') {
+                    firebaseConfig = JSON.parse(__firebase_config);
+                }
+            } catch (e) {
+                console.warn('Unable to parse __firebase_config', e);
+            }
+
+            if (!firebaseConfig) {
+                updateCloudUI(false, null);
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                currentUser = auth.currentUser;
+                if (!currentUser) return;
+
+                isCloudSyncActive = true;
+                updateCloudUI(true, currentUser.uid);
+
+                const userSessionsCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'breath_sessions');
+
+                onSnapshot(userSessionsCol, (snapshot) => {
+                    const cloudLogs = [];
+                    snapshot.forEach((docSnap) => {
+                        cloudLogs.push({
+                            id: docSnap.id,
+                            ...docSnap.data()
+                        });
+                    });
+
+                    cloudLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    inMemoryFallbackLogs = cloudLogs;
+                    renderDayWiseLogs();
+                }, (error) => {
+                    console.error('Firestore listener subscription error:', error);
+                    updateCloudUI(false, null);
+                });
+            } catch (err) {
+                console.error('Firebase initialization error:', err);
+                updateCloudUI(false, null);
+            }
+        }
+
+        function getStoredLogs() {
+            if (isCloudSyncActive) return inMemoryFallbackLogs;
+            try {
+                const data = localStorage.getItem(LOGS_STORAGE_KEY);
+                return data ? JSON.parse(data) : inMemoryFallbackLogs;
+            } catch (e) {
+                return inMemoryFallbackLogs;
+            }
+        }
+
+        function saveStoredLogs(logs) {
+            inMemoryFallbackLogs = logs;
+            if (!isCloudSyncActive) {
+                try {
+                    localStorage.setItem(LOGS_STORAGE_KEY, JSON.stringify(logs));
+                } catch (e) {
+                    // Gracefully fallback to memory
+                }
+            }
+        }
+
+        function formatDurationNicely(seconds) {
+            if (!seconds || seconds <= 0) return '0s';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            if (mins === 0) return `${secs}s`;
+            if (secs === 0) return `${mins}m`;
+            return `${mins}m ${secs}s`;
+        }
+
+        function getDayKey(dateObj) {
+            return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+        }
+
+        function getFormattedDayTitle(dateString) {
+            const date = new Date(dateString + 'T00:00:00');
+            const todayStr = getDayKey(new Date());
+            
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = getDayKey(yesterday);
+
+            if (dateString === todayStr) {
+                return `Today • ${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+            } else if (dateString === yesterdayStr) {
+                return `Yesterday • ${date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+            } else {
+                return date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+            }
+        }
+
+        function calculateStreak(uniqueDayKeys) {
+            if (!uniqueDayKeys || uniqueDayKeys.length === 0) return 0;
+            const sortedDays = Array.from(uniqueDayKeys).sort().reverse();
+            const todayKey = getDayKey(new Date());
+            
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayKey = getDayKey(yesterday);
+
+            const firstDay = sortedDays[0];
+            if (firstDay !== todayKey && firstDay !== yesterdayKey) {
+                return 0;
+            }
+
+            let streak = 1;
+            let current = new Date(firstDay + 'T00:00:00');
+
+            for (let i = 1; i < sortedDays.length; i++) {
+                const prevExpected = new Date(current);
+                prevExpected.setDate(prevExpected.getDate() - 1);
+                const prevKey = getDayKey(prevExpected);
+
+                if (sortedDays[i] === prevKey) {
+                    streak++;
+                    current = prevExpected;
+                } else {
+                    break;
+                }
+            }
+            return streak;
+        }
+
+        function renderDayWiseLogs() {
+            const logs = getStoredLogs();
+            const todayKey = getDayKey(new Date());
+
+            if (logCountBadge) logCountBadge.textContent = logs.length;
+
+            let todaySecs = 0;
+            let todayCycles = 0;
+            const uniqueDayKeys = new Set();
+            const dayGroups = {};
+
+            logs.forEach(item => {
+                const itemDayKey = item.dayKey || getDayKey(new Date(item.timestamp));
+                uniqueDayKeys.add(itemDayKey);
+
+                if (itemDayKey === todayKey) {
+                    todaySecs += item.durationSeconds || 0;
+                    todayCycles += item.cycles || 0;
+                }
+
+                if (!dayGroups[itemDayKey]) {
+                    dayGroups[itemDayKey] = [];
+                }
+                dayGroups[itemDayKey].push(item);
+            });
+
+            if (todayTimeMetric) todayTimeMetric.textContent = formatDurationNicely(todaySecs);
+            if (todayCyclesMetric) todayCyclesMetric.textContent = todayCycles;
+            const streak = calculateStreak(Array.from(uniqueDayKeys));
+            if (dayStreakMetric) dayStreakMetric.textContent = `${streak} ${streak === 1 ? 'Day' : 'Days'}`;
+
+            if (!dayLogListContainer) return;
+            dayLogListContainer.innerHTML = '';
+            const sortedDays = Object.keys(dayGroups).sort().reverse();
+
+            if (sortedDays.length === 0) {
+                dayLogListContainer.innerHTML = `
+                    <div class="text-center py-8 text-slate-400">
+                        <div class="w-12 h-12 mx-auto mb-2 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-teal-300/80">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <p class="font-medium text-slate-300">No sessions recorded yet</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Start breathing and click "Save" to log your daily journey.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            sortedDays.forEach(dayKey => {
+                const daySessions = dayGroups[dayKey];
+                const dayTotalSecs = daySessions.reduce((acc, s) => acc + (s.durationSeconds || 0), 0);
+                const dayTotalCycles = daySessions.reduce((acc, s) => acc + (s.cycles || 0), 0);
+
+                const daySection = document.createElement('div');
+                daySection.className = "bg-white/[0.02] border border-white/10 rounded-2xl p-3";
+
+                const dayHeader = document.createElement('div');
+                dayHeader.className = "flex items-center justify-between pb-2 mb-2 border-b border-white/5";
+                dayHeader.innerHTML = `
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full ${dayKey === todayKey ? 'bg-teal-400 animate-pulse' : 'bg-slate-500'}"></span>
+                        <h4 class="font-medium text-slate-200 text-xs">${getFormattedDayTitle(dayKey)}</h4>
+                    </div>
+                    <div class="text-[10px] text-teal-300 font-mono">
+                        ${formatDurationNicely(dayTotalSecs)} • ${dayTotalCycles} cyc
+                    </div>
+                `;
+                daySection.appendChild(dayHeader);
+
+                const sessionList = document.createElement('div');
+                sessionList.className = "space-y-1.5";
+
+                daySessions.forEach(session => {
+                    const timeString = new Date(session.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const row = document.createElement('div');
+                    row.className = "flex items-center justify-between py-1.5 px-2 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] transition text-[11px]";
+                    
+                    row.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="text-slate-400 font-mono text-[10px]">${timeString}</span>
+                            <span class="px-2 py-0.5 rounded-md font-medium text-[10px] ${
+                                session.patternKey === 'relax' ? 'bg-indigo-500/20 text-indigo-300' :
+                                session.patternKey === 'calm' ? 'bg-sky-500/20 text-sky-300' :
+                                'bg-teal-500/20 text-teal-300'
+                            }">${session.patternName}</span>
+                            <span class="text-slate-400 text-[10px]">${session.mood || ''}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-slate-300 font-medium">${formatDurationNicely(session.durationSeconds)}</span>
+                            <span class="text-slate-500 text-[10px]">(${session.cycles}c)</span>
+                        </div>
+                    `;
+                    sessionList.appendChild(row);
+                });
+
+                daySection.appendChild(sessionList);
+                dayLogListContainer.appendChild(daySection);
+            });
+        }
+
+        function openSavePrompt() {
+            if (totalElapsedSeconds < 5) return;
+            const pattern = PATTERNS[currentPatternKey];
+            savePromptSummary.textContent = `${pattern.name} • ${completedCycles} cycle${completedCycles === 1 ? '' : 's'} • ${formatTime(totalElapsedSeconds)}`;
+            savePromptModal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeSavePrompt() {
+            savePromptModal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        async function commitSessionLog() {
+            if (totalElapsedSeconds < 5) {
+                closeSavePrompt();
+                return;
+            }
+
+            const pattern = PATTERNS[currentPatternKey];
+            const now = new Date();
+
+            const entry = {
+                timestamp: now.toISOString(),
+                dayKey: getDayKey(now),
+                patternKey: currentPatternKey,
+                patternName: pattern.name,
+                durationSeconds: totalElapsedSeconds,
+                cycles: completedCycles,
+                mood: selectedMood
+            };
+
+            if (isCloudSyncActive && currentUser && db) {
+                try {
+                    const userSessionsCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'breath_sessions');
+                    await addDoc(userSessionsCol, entry);
+                } catch (err) {
+                    console.error('Failed to commit document to Firestore, saving locally:', err);
+                    const existingLogs = getStoredLogs();
+                    existingLogs.unshift({ id: 'sess_' + Date.now(), ...entry });
+                    saveStoredLogs(existingLogs);
+                }
+            } else {
+                const existingLogs = getStoredLogs();
+                existingLogs.unshift({ id: 'sess_' + Date.now(), ...entry });
+                saveStoredLogs(existingLogs);
+            }
+
+            renderDayWiseLogs();
+            closeSavePrompt();
+            resetSession();
+            openLogModal();
+        }
+
+        function openLogModal() {
+            renderDayWiseLogs();
+            if (logModal) logModal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeLogModal() {
+            if (logModal) logModal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        async function loadSampleDays() {
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const twoDaysAgo = new Date();
+            twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+            const sampleLogs = [
+                {
+                    timestamp: new Date(new Date().setHours(8, 30, 0, 0)).toISOString(),
+                    dayKey: getDayKey(today),
+                    patternKey: 'box',
+                    patternName: 'Box Breathing',
+                    durationSeconds: 240,
+                    cycles: 15,
+                    mood: '⚡ Focused'
+                },
+                {
+                    timestamp: new Date(new Date(yesterday).setHours(21, 15, 0, 0)).toISOString(),
+                    dayKey: getDayKey(yesterday),
+                    patternKey: 'relax',
+                    patternName: '4-7-8 Sleep',
+                    durationSeconds: 380,
+                    cycles: 20,
+                    mood: '🌙 Relaxed'
+                },
+                {
+                    timestamp: new Date(new Date(yesterday).setHours(14, 0, 0, 0)).toISOString(),
+                    dayKey: getDayKey(yesterday),
+                    patternKey: 'calm',
+                    patternName: 'Coherent Resonance',
+                    durationSeconds: 300,
+                    cycles: 27,
+                    mood: '🌿 Grounded'
+                },
+                {
+                    timestamp: new Date(new Date(twoDaysAgo).setHours(9, 10, 0, 0)).toISOString(),
+                    dayKey: getDayKey(twoDaysAgo),
+                    patternKey: 'box',
+                    patternName: 'Box Breathing',
+                    durationSeconds: 180,
+                    cycles: 11,
+                    mood: '😌 Calm'
+                }
+            ];
+
+            if (isCloudSyncActive && currentUser && db) {
+                const userSessionsCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'breath_sessions');
+                for (const item of sampleLogs) {
+                    await addDoc(userSessionsCol, item);
+                }
+            } else {
+                saveStoredLogs(sampleLogs);
+                renderDayWiseLogs();
+            }
+        }
+
+        async function clearAllLogs() {
+            if (isCloudSyncActive && currentUser && db) {
+                try {
+                    const userSessionsCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'breath_sessions');
+                    const snapshot = await getDocs(userSessionsCol);
+                    const deletePromises = [];
+                    snapshot.forEach((docSnap) => {
+                        deletePromises.push(deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'breath_sessions', docSnap.id)));
+                    });
+                    await Promise.all(deletePromises);
+                } catch (err) {
+                    console.error('Error clearing Firestore collection:', err);
+                }
+            }
+            saveStoredLogs([]);
+            renderDayWiseLogs();
+        }
+
+        function exportLogSummary() {
+            const logs = getStoredLogs();
+            if (logs.length === 0) return;
+
+            let summary = `Serene Breathing Space - Daily Log Summary\n`;
+            summary += `Generated: ${new Date().toLocaleString()}\n`;
+            summary += `Total Recorded Sessions: ${logs.length}\n\n`;
+
+            logs.forEach(item => {
+                const dateStr = new Date(item.timestamp).toLocaleString();
+                summary += `[${dateStr}] ${item.patternName} | ${formatDurationNicely(item.durationSeconds)} | ${item.cycles} cycles | ${item.mood || 'N/A'}\n`;
+            });
+
+            const tempEl = document.createElement('textarea');
+            tempEl.value = summary;
+            tempEl.style.position = 'fixed';
+            tempEl.style.opacity = '0';
+            document.body.appendChild(tempEl);
+            tempEl.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempEl);
+
+            if (exportLogBtn) {
+                const originalText = exportLogBtn.innerHTML;
+                exportLogBtn.innerHTML = `<span class="text-teal-300 text-[11px]">Copied!</span>`;
+                setTimeout(() => {
+                    exportLogBtn.innerHTML = originalText;
+                }, 1800);
+            }
+        }
+
+        function setRingProgress(ratio) {
+            const clamped = Math.max(0, Math.min(1, ratio));
+            const offset = RING_CIRCUMFERENCE - (clamped * RING_CIRCUMFERENCE);
+            progressRing.style.strokeDashoffset = offset;
+
+            if (ringHeadBead && ringHeadGlow) {
+                const angleRad = (-90 + (clamped * 360)) * (Math.PI / 180);
+                const bx = 120 + 112 * Math.cos(angleRad);
+                const by = 120 + 112 * Math.sin(angleRad);
+
+                ringHeadBead.setAttribute('cx', bx);
+                ringHeadBead.setAttribute('cy', by);
+                ringHeadGlow.setAttribute('cx', bx);
+                ringHeadGlow.setAttribute('cy', by);
+
+                const opacity = clamped <= 0.005 ? 0.25 : 1.0;
+                ringHeadBead.setAttribute('opacity', opacity);
+                ringHeadGlow.setAttribute('opacity', opacity * 0.5);
+            }
+        }
+
+        function formatTime(totalSec) {
+            const mins = Math.floor(totalSec / 60);
+            const secs = Math.floor(totalSec % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function updateVisualizer(pattern, step, stepProgressRatio) {
+            const prevStepIndex = (currentStepIndex - 1 + pattern.steps.length) % pattern.steps.length;
+            const prevStep = pattern.steps[prevStepIndex];
+
+            let airVolume = 0;
+            if (step.phase === 'Inhale') {
+                airVolume = stepProgressRatio;
+            } else if (step.phase === 'Hold') {
+                airVolume = (prevStep.phase === 'Inhale' || prevStep.scale > 1.0) ? 1.0 : 0.0;
+            } else if (step.phase === 'Exhale') {
+                airVolume = 1.0 - stepProgressRatio;
+            }
+
+            if (orbLiquidFill) {
+                orbLiquidFill.style.height = `${(airVolume * 100).toFixed(1)}%`;
+            }
+            if (orbAirPercent) {
+                orbAirPercent.textContent = `${Math.round(airVolume * 100)}%`;
+            }
+
+            const startOrbScale = prevStep.scale;
+            const targetOrbScale = step.scale;
+            let currentOrbScale;
+            if (step.phase === 'Hold') {
+                currentOrbScale = targetOrbScale;
+            } else {
+                currentOrbScale = startOrbScale + (targetOrbScale - startOrbScale) * stepProgressRatio;
+            }
+
+            if (orbContainer) {
+                orbContainer.style.transform = `scale(${currentOrbScale})`;
+            }
+
+            const startLx = prevStep.lungScaleX || 0.9;
+            const targetLx = step.lungScaleX || 1.15;
+            const startLy = prevStep.lungScaleY || 0.9;
+            const targetLy = step.lungScaleY || 1.15;
+            const startDy = prevStep.diaphragmY || 0;
+            const targetDy = step.diaphragmY || 15;
+
+            let curLx, curLy, curDy;
+            if (step.phase === 'Hold') {
+                curLx = targetLx;
+                curLy = targetLy;
+                curDy = targetDy;
+            } else {
+                curLx = startLx + (targetLx - startLx) * stepProgressRatio;
+                curLy = startLy + (targetLy - startLy) * stepProgressRatio;
+                curDy = startDy + (targetDy - startDy) * stepProgressRatio;
+            }
+
+            if (rightLungLobe) rightLungLobe.style.transform = `scale(${curLx}, ${curLy})`;
+            if (leftLungLobe) leftLungLobe.style.transform = `scale(${curLx}, ${curLy})`;
+            if (diaphragmMuscle) diaphragmMuscle.style.transform = `translateY(${curDy}px)`;
+        }
+
+        function triggerPhaseTransition(step) {
+            const theme = PHASE_THEMES[step.phase] || PHASE_THEMES['Inhale'];
+
+            phaseText.classList.remove('phase-pop');
+            void phaseText.offsetWidth;
+            phaseText.classList.add('phase-pop');
+
+            phaseText.className = `font-display text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r ${theme.gradientText} bg-clip-text text-transparent animate-shimmer ${theme.textGlow} phase-pop transition-all duration-300 select-none`;
+            phaseText.textContent = step.phase;
+
+            if (phaseBadge) {
+                phaseBadge.className = `inline-flex items-center gap-1.5 py-0.5 px-3 rounded-full ${theme.badgeBg} text-[10px] font-semibold tracking-wider uppercase transition-all duration-500`;
+                if (phaseBadgeIcon) phaseBadgeIcon.textContent = theme.badgeIcon;
+                if (phaseBadgeLabel) phaseBadgeLabel.textContent = theme.badgeLabel;
+            }
+
+            instructionText.className = `text-[11px] sm:text-xs font-medium tracking-wide ${theme.subtextClass} transition-all duration-300 drop-shadow`;
+            instructionText.textContent = getStepInstruction(step.phase);
+            breathTip.textContent = step.tip;
+
+            progressRing.style.stroke = theme.ringStroke;
+            if (ringHeadBead) {
+                ringHeadBead.setAttribute('stroke', theme.ringStroke);
+            }
+            if (ringHeadGlow) {
+                ringHeadGlow.setAttribute('fill', theme.ringStroke);
+            }
+            ambientBackdrop.className = `ambient-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[540px] h-[340px] sm:h-[540px] rounded-full ${theme.backdropGlow}`;
+
+            if (rippleContainer) {
+                rippleContainer.style.opacity = step.phase === 'Hold' ? '0.1' : '0.45';
+            }
+
+            if (rGradStop1) rGradStop1.setAttribute('stop-color', theme.lungStop1);
+            if (rGradStop2) rGradStop2.setAttribute('stop-color', theme.lungStop2);
+            if (lGradStop1) lGradStop1.setAttribute('stop-color', theme.lungStop1);
+            if (lGradStop2) lGradStop2.setAttribute('stop-color', theme.lungStop2);
+
+            if (rightLungPath) rightLungPath.setAttribute('stroke', theme.lungStroke);
+            if (leftLungPath) leftLungPath.setAttribute('stroke', theme.lungStroke);
+            if (diaphragmMuscle) diaphragmMuscle.setAttribute('stroke', theme.ringStroke);
+
+            if (oxygenStreams) {
+                oxygenStreams.className.baseVal = theme.streamClass;
+            }
+
+            if (orbContainer) {
+                orbContainer.style.borderColor = theme.ringStroke;
+                orbContainer.style.boxShadow = `0 0 45px ${theme.ringStroke}40`;
+            }
+            if (orbLiquidFill) {
+                if (step.phase === 'Inhale') {
+                    orbLiquidFill.className = "orb-liquid-wave w-full bg-gradient-to-t from-teal-500/60 via-teal-400/40 to-cyan-300/35 relative";
+                    if (orbLiquidSurface) orbLiquidSurface.className = "liquid-surface-wave absolute top-0 left-[-25%] right-[-25%] h-3.5 -translate-y-1/2 bg-teal-200/50 rounded-full blur-[1px]";
+                } else if (step.phase === 'Hold') {
+                    orbLiquidFill.className = "orb-liquid-wave w-full bg-gradient-to-t from-amber-500/60 via-amber-400/40 to-yellow-300/35 relative";
+                    if (orbLiquidSurface) orbLiquidSurface.className = "liquid-surface-wave absolute top-0 left-[-25%] right-[-25%] h-3.5 -translate-y-1/2 bg-amber-200/50 rounded-full blur-[1px]";
+                } else if (step.phase === 'Exhale') {
+                    orbLiquidFill.className = "orb-liquid-wave w-full bg-gradient-to-t from-rose-500/60 via-rose-400/40 to-pink-300/35 relative";
+                    if (orbLiquidSurface) orbLiquidSurface.className = "liquid-surface-wave absolute top-0 left-[-25%] right-[-25%] h-3.5 -translate-y-1/2 bg-rose-200/50 rounded-full blur-[1px]";
+                }
+            }
+
+            soundEngine.playPhaseTone(step.phase);
+
+            if ('vibrate' in navigator) {
+                try { navigator.vibrate(35); } catch (e) {}
+            }
+        }
+
+        function getStepInstruction(phase) {
+            switch(phase) {
+                case 'Inhale': return 'Deep Inhalation';
+                case 'Hold': return 'Suspend Breath';
+                case 'Exhale': return 'Gentle Exhalation';
+                default: return 'Breathe';
+            }
+        }
+
+        function loop(timestamp) {
+            if (!isRunning) return;
+
+            if (!lastTimestamp) lastTimestamp = timestamp;
+            const deltaSeconds = (timestamp - lastTimestamp) / 1000;
+            lastTimestamp = timestamp;
+
+            const pattern = PATTERNS[currentPatternKey];
+            const currentStep = pattern.steps[currentStepIndex];
+
+            stepProgressTime += deltaSeconds;
+
+            if (stepProgressTime >= currentStep.duration) {
+                stepProgressTime = 0;
+                currentStepIndex = (currentStepIndex + 1) % pattern.steps.length;
+
+                if (currentStepIndex === 0) {
+                    completedCycles++;
+                    cycleCountEl.textContent = completedCycles;
+                }
+
+                const nextStep = pattern.steps[currentStepIndex];
+                triggerPhaseTransition(nextStep);
+            }
+
+            const stepRatio = Math.min(stepProgressTime / currentStep.duration, 1.0);
+            const remainingSecs = Math.max(0, Math.ceil(currentStep.duration - stepProgressTime));
+
+            countdownNumber.textContent = remainingSecs;
+
+            const prevStepIdx = (currentStepIndex - 1 + pattern.steps.length) % pattern.steps.length;
+            const prevStep = pattern.steps[prevStepIdx];
+
+            let circleLineRatio = 0;
+            if (currentStep.phase === 'Inhale') {
+                circleLineRatio = stepRatio;
+            } else if (currentStep.phase === 'Hold') {
+                circleLineRatio = (prevStep.phase === 'Inhale' || prevStep.scale > 1.0) ? 1.0 : 0.0;
+            } else if (currentStep.phase === 'Exhale') {
+                circleLineRatio = 1.0 - stepRatio;
+            }
+
+            setRingProgress(circleLineRatio);
+            updateVisualizer(pattern, currentStep, stepRatio);
+
+            animFrameId = requestAnimationFrame(loop);
+        }
+
+        function startSession() {
+            soundEngine.init();
+            if (soundEngine.ambientType !== 'off') {
+                soundEngine.startAmbient(soundEngine.ambientType);
+            }
+
+            isRunning = true;
+            lastTimestamp = null;
+
+            playIcon.classList.add('hidden');
+            pauseIcon.classList.remove('hidden');
+            playButtonLabel.textContent = 'Pause';
+            logCurrentSessionBtn.removeAttribute('disabled');
+
+            if (!sessionTimerInterval) {
+                sessionTimerInterval = setInterval(() => {
+                    totalElapsedSeconds++;
+                    sessionTimeEl.textContent = formatTime(totalElapsedSeconds);
+                    if (totalElapsedSeconds >= 5) {
+                        logCurrentSessionBtn.removeAttribute('disabled');
+                    }
+                }, 1000);
+            }
+
+            const pattern = PATTERNS[currentPatternKey];
+            const activeStep = pattern.steps[currentStepIndex];
+            triggerPhaseTransition(activeStep);
+
+            animFrameId = requestAnimationFrame(loop);
+        }
+
+        function pauseSession() {
+            isRunning = false;
+            lastTimestamp = null;
+            if (animFrameId) {
+                cancelAnimationFrame(animFrameId);
+                animFrameId = null;
+            }
+
+            if (sessionTimerInterval) {
+                clearInterval(sessionTimerInterval);
+                sessionTimerInterval = null;
+            }
+
+            soundEngine.stopAmbient();
+
+            playIcon.classList.remove('hidden');
+            pauseIcon.classList.add('hidden');
+            playButtonLabel.textContent = 'Resume';
+            instructionText.textContent = 'Paused';
+
+            if (oxygenStreams) {
+                oxygenStreams.className.baseVal = 'flow-still';
+            }
+        }
+
+        function resetSession() {
+            pauseSession();
+            currentStepIndex = 0;
+            stepProgressTime = 0;
+            totalElapsedSeconds = 0;
+            completedCycles = 0;
+
+            sessionTimeEl.textContent = '00:00';
+            cycleCountEl.textContent = '0';
+            countdownNumber.textContent = PATTERNS[currentPatternKey].steps[0].duration;
+
+            phaseText.className = "font-display text-3xl sm:text-4xl font-bold tracking-tight bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 bg-clip-text text-transparent animate-shimmer drop-shadow-[0_0_20px_rgba(45,212,191,0.5)] transition-all duration-300 select-none";
+            phaseText.textContent = 'Inhale';
+            
+            if (phaseBadge) {
+                phaseBadge.className = "inline-flex items-center gap-1.5 py-0.5 px-3 rounded-full bg-teal-500/20 border border-teal-400/40 text-[10px] font-semibold tracking-wider uppercase text-teal-300 mb-1 transition-all duration-500";
+                if (phaseBadgeIcon) phaseBadgeIcon.textContent = "↑";
+                if (phaseBadgeLabel) phaseBadgeLabel.textContent = "EXPANDING";
+            }
+
+            instructionText.className = "text-[11px] sm:text-xs font-medium tracking-wide text-teal-200/90 transition-all duration-300 drop-shadow";
+            instructionText.textContent = 'Deep Inhalation';
+            breathTip.textContent = PATTERNS[currentPatternKey].steps[0].tip;
+            playButtonLabel.textContent = 'Start Session';
+            logCurrentSessionBtn.setAttribute('disabled', 'true');
+
+            if (rippleContainer) rippleContainer.style.opacity = '0.35';
+
+            setRingProgress(0);
+            if (rightLungLobe) rightLungLobe.style.transform = 'scale(0.9, 0.9)';
+            if (leftLungLobe) leftLungLobe.style.transform = 'scale(0.9, 0.9)';
+            if (diaphragmMuscle) diaphragmMuscle.style.transform = 'translateY(0px)';
+            if (orbContainer) orbContainer.style.transform = 'scale(0.85)';
+            if (orbLiquidFill) orbLiquidFill.style.height = '0%';
+            if (orbAirPercent) orbAirPercent.textContent = '0%';
+
+            if (oxygenStreams) {
+                oxygenStreams.className.baseVal = 'flow-inhale';
+            }
+        }
+
+        function toggleVisualMode() {
+            isLungView = !isLungView;
+            if (isLungView) {
+                if (lungsVisualizer) lungsVisualizer.classList.remove('hidden');
+                if (orbVisualizer) orbVisualizer.classList.add('hidden');
+                if (viewModeIcon) viewModeIcon.textContent = '🫁';
+                if (viewModeText) viewModeText.textContent = 'Lungs';
+                if (viewToggleBtn) viewToggleBtn.className = "py-2 px-2.5 sm:px-3 rounded-full bg-teal-500/15 hover:bg-teal-500/25 border border-teal-400/40 text-teal-200 hover:text-white transition backdrop-blur-md flex items-center gap-1.5 active:scale-95";
+            } else {
+                if (lungsVisualizer) lungsVisualizer.classList.add('hidden');
+                if (orbVisualizer) orbVisualizer.classList.remove('hidden');
+                if (viewModeIcon) viewModeIcon.textContent = '🫧';
+                if (viewModeText) viewModeText.textContent = 'Orb';
+                if (viewToggleBtn) viewToggleBtn.className = "py-2 px-2.5 sm:px-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition backdrop-blur-md flex items-center gap-1.5 active:scale-95";
+            }
+        }
+
+        if (viewToggleBtn) {
+            viewToggleBtn.addEventListener('click', toggleVisualMode);
+        }
+
+        function switchPattern(patternKey) {
+            if (!PATTERNS[patternKey]) return;
+            const wasRunning = isRunning;
+            if (isRunning) pauseSession();
+
+            currentPatternKey = patternKey;
+            const pattern = PATTERNS[patternKey];
+
+            progressRing.style.stroke = pattern.color;
+            patternTimingLabel.textContent = pattern.label;
+
+            ambientBackdrop.className = `ambient-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[540px] h-[340px] sm:h-[540px] rounded-full opacity-35 ${pattern.glowClass}`;
+
+            patternButtons.forEach(btn => {
+                if (btn.dataset.pattern === patternKey) {
+                    btn.className = "pattern-btn active-pattern flex flex-col items-center py-2 px-1 rounded-xl text-center border transition bg-teal-500/20 border-teal-400/50 text-white";
+                } else {
+                    btn.className = "pattern-btn flex flex-col items-center py-2 px-1 rounded-xl text-center border transition bg-white/[0.02] border-white/5 hover:bg-white/[0.06] text-slate-300";
+                }
+            });
+
+            resetSession();
+
+            if (wasRunning) startSession();
+        }
+
+        togglePlayBtn.addEventListener('click', () => {
+            if (isRunning) pauseSession();
+            else startSession();
+        });
+
+        resetBtn.addEventListener('click', resetSession);
+
+        patternButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                switchPattern(button.dataset.pattern);
+            });
+        });
+
+        function openSoundModal() {
+            soundEngine.init();
+            if (soundModal) soundModal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeSoundModal() {
+            if (soundModal) soundModal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        if (soundModalBtn) soundModalBtn.addEventListener('click', openSoundModal);
+        if (quickSoundscapeBadge) quickSoundscapeBadge.addEventListener('click', openSoundModal);
+        if (closeSoundModalBtn) closeSoundModalBtn.addEventListener('click', closeSoundModal);
+        if (closeSoundModalBtn2) closeSoundModalBtn2.addEventListener('click', closeSoundModal);
+        if (soundModal) {
+            soundModal.addEventListener('click', (e) => {
+                if (e.target === soundModal) closeSoundModal();
+            });
+        }
+
+        const ambientNames = {
+            off: 'Ambience: Off',
+            drone: 'Zen 432Hz Om',
+            ocean: 'Ocean Waves',
+            rain: 'Gentle Rain',
+            binaural: 'Alpha 10Hz Beats',
+            forest: 'Forest Breeze'
+        };
+
+        ambientCards.forEach(card => {
+            card.addEventListener('click', () => {
+                ambientCards.forEach(c => {
+                    c.className = "ambient-card p-2.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:bg-white/[0.07] text-left transition flex items-center gap-2.5";
+                });
+                card.className = "ambient-card active-card p-2.5 rounded-2xl bg-teal-500/20 border border-teal-400/50 text-left transition flex items-center gap-2.5";
+
+                const type = card.dataset.ambient;
+                soundEngine.ambientType = type;
+                if (activeSoundscapeName) activeSoundscapeName.textContent = ambientNames[type] || 'Ambience: Off';
+
+                if (type !== 'off') {
+                    if (musicActivePing) musicActivePing.classList.remove('hidden');
+                    if (musicActiveDot) musicActiveDot.classList.remove('hidden');
+                    soundEngine.startAmbient(type);
+                } else {
+                    if (musicActivePing) musicActivePing.classList.add('hidden');
+                    if (musicActiveDot) musicActiveDot.classList.add('hidden');
+                    soundEngine.stopAmbient();
+                }
+            });
+        });
+
+        if (ambientVolSlider) {
+            ambientVolSlider.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                if (ambientVolLabel) ambientVolLabel.textContent = `${Math.round(val * 100)}%`;
+                soundEngine.setAmbientVolume(val);
+            });
+        }
+
+        chimeCards.forEach(card => {
+            card.addEventListener('click', () => {
+                chimeCards.forEach(c => {
+                    c.className = "chime-card py-2 px-1 rounded-xl bg-white/[0.03] border border-white/10 text-center transition flex flex-col items-center";
+                });
+                card.className = "chime-card active-card py-2 px-1 rounded-xl bg-teal-500/20 border border-teal-400/50 text-center transition flex flex-col items-center";
+                soundEngine.chimeType = card.dataset.chime;
+                soundEngine.playPhaseTone('Inhale');
+            });
+        });
+
+        if (chimeVolSlider) {
+            chimeVolSlider.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                if (chimeVolLabel) chimeVolLabel.textContent = `${Math.round(val * 100)}%`;
+                soundEngine.setChimeVolume(val);
+            });
+        }
+
+        if (previewChimeBtn) {
+            previewChimeBtn.addEventListener('click', () => {
+                soundEngine.playPhaseTone('Inhale');
+            });
+        }
+
+        soundToggleBtn.addEventListener('click', () => {
+            soundEngine.enabled = !soundEngine.enabled;
+            if (soundEngine.enabled) {
+                soundIconOn.classList.remove('hidden');
+                soundIconOff.classList.add('hidden');
+                soundEngine.setAmbientVolume(soundEngine.ambientVolume);
+                if (isRunning && soundEngine.ambientType !== 'off') {
+                    soundEngine.startAmbient(soundEngine.ambientType);
+                }
+                soundEngine.playPhaseTone('Hold');
+            } else {
+                soundIconOn.classList.add('hidden');
+                soundIconOff.classList.remove('hidden');
+                soundEngine.stopAmbient();
+            }
+        });
+
+        function openInfoModal() {
+            infoModal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeInfoModal() {
+            infoModal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        infoBtn.addEventListener('click', openInfoModal);
+        closeInfoBtn.addEventListener('click', closeInfoModal);
+        modalGotItBtn.addEventListener('click', closeInfoModal);
+        infoModal.addEventListener('click', (e) => {
+            if (e.target === infoModal) closeInfoModal();
+        });
+
+        logBtn.addEventListener('click', openLogModal);
+        closeLogBtn.addEventListener('click', closeLogModal);
+        logModal.addEventListener('click', (e) => {
+            if (e.target === logModal) closeLogModal();
+        });
+
+        logCurrentSessionBtn.addEventListener('click', () => {
+            if (isRunning) pauseSession();
+            openSavePrompt();
+        });
+
+        cancelSaveBtn.addEventListener('click', closeSavePrompt);
+        confirmSaveBtn.addEventListener('click', commitSessionLog);
+        savePromptModal.addEventListener('click', (e) => {
+            if (e.target === savePromptModal) closeSavePrompt();
+        });
+
+        moodButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                moodButtons.forEach(b => {
+                    b.className = "mood-btn py-2 px-1 rounded-xl bg-white/5 border border-white/10 text-[11px] text-slate-300 hover:bg-white/10 flex flex-col items-center transition";
+                });
+                btn.className = "mood-btn active-mood py-2 px-1 rounded-xl bg-teal-500/20 border border-teal-400/50 text-[11px] text-white flex flex-col items-center transition";
+                selectedMood = btn.dataset.mood;
+            });
+        });
+
+        clearLogBtn.addEventListener('click', clearAllLogs);
+        sampleDataBtn.addEventListener('click', loadSampleDays);
+        exportLogBtn.addEventListener('click', exportLogSummary);
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && e.target === document.body) {
+                e.preventDefault();
+                if (isRunning) pauseSession();
+                else startSession();
+            } else if (e.code === 'Escape') {
+                closeInfoModal();
+                closeLogModal();
+                closeSoundModal();
+                closeSavePrompt();
+            }
+        });
+
+        function initApp() {
+            const initialPattern = PATTERNS[currentPatternKey];
+            if (countdownNumber) countdownNumber.textContent = initialPattern.steps[0].duration;
+            setRingProgress(0);
+            renderDayWiseLogs();
+            setupCloudPersistence();
+
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./sw.js')
+                        .then(reg => console.log('Serene PWA Service Worker Registered', reg))
+                        .catch(err => console.error('Service Worker registration failed:', err));
+                });
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
+</body>
+</html>

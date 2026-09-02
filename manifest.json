@@ -1,0 +1,18 @@
+{
+  "name": "Serene - Mindful Breathing Space",
+  "short_name": "Serene",
+  "description": "An anatomical & zen mindful breathing application with customizable ambient soundscapes, real-time visualizers, and day-wise mindfulness session tracking.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#080c14",
+  "theme_color": "#080c14",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
